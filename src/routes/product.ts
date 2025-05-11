@@ -38,12 +38,154 @@ ProductRoute.get('/:id', async (req, res) => {
     console.log('Response:', reponse); // Debug log
     res.send(reponse)
 });
-ProductRoute.post('/', (req, res) => {
-    const newProduct: Product = req.body;
-    const response = ProductService.handleCreateProduct(req)
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Create a new product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               _id:
+ *                   type: string
+ *                   description: The ID of the created product
+ *                   example: "645b1f2e8f1b2c001c8e4d3b"
+ *               name:
+ *                 type: string
+ *                 description: The name of the product
+ *                 example: "Office Chair"
+ *               desc:
+ *                 type: string
+ *                 description: The description of the product
+ *                 example: "A comfortable office chair with adjustable height"
+ *               price:
+ *                 type: number
+ *                 description: The price of the product
+ *                 example: 120.99
+ *               stockQty:
+ *                 type: number
+ *                 description: The stock quantity of the product
+ *                 example: 50
+ *               warningLevel:
+ *                 type: number
+ *                 description: The warning level for low stock
+ *                 example: 10
+ *               categoryId:
+ *                 type: string
+ *                 description: The ID of the category the product belongs to
+ *                 example: "645b1f2e8f1b2c001c8e4d3a"
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the created product
+ *                   example: "645b1f2e8f1b2c001c8e4d3b"
+ *                 name:
+ *                   type: string
+ *                   description: The name of the product
+ *                 desc:
+ *                   type: string
+ *                   description: The description of the product
+ *                 price:
+ *                   type: number
+ *                   description: The price of the product
+ *                 stockQty:
+ *                   type: number
+ *                   description: The stock quantity of the product
+ *                 warningLevel:
+ *                   type: number
+ *                   description: The warning level for low stock
+ *                 categoryId:
+ *                   type: string
+ *                   description: The ID of the category the product belongs to
+ *       400:
+ *         description: Invalid input
+ */
+ProductRoute.post('/', async (req, res) => {
+    //console.log('Request body:', req.body); // Debug log
+    const response = await ProductService.handleCreateProduct(req)
     res.send(response)
 }
 );
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Update a new product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the product
+ *                 example: "Office Chair"
+ *               desc:
+ *                 type: string
+ *                 description: The description of the product
+ *                 example: "A comfortable office chair with adjustable height"
+ *               price:
+ *                 type: number
+ *                 description: The price of the product
+ *                 example: 120.99
+ *               stockQty:
+ *                 type: number
+ *                 description: The stock quantity of the product
+ *                 example: 50
+ *               warningLevel:
+ *                 type: number
+ *                 description: The warning level for low stock
+ *                 example: 10
+ *               categoryId:
+ *                 type: string
+ *                 description: The ID of the category the product belongs to
+ *                 example: "645b1f2e8f1b2c001c8e4d3a"
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the created product
+ *                   example: "645b1f2e8f1b2c001c8e4d3b"
+ *                 name:
+ *                   type: string
+ *                   description: The name of the product
+ *                 desc:
+ *                   type: string
+ *                   description: The description of the product
+ *                 price:
+ *                   type: number
+ *                   description: The price of the product
+ *                 stockQty:
+ *                   type: number
+ *                   description: The stock quantity of the product
+ *                 warningLevel:
+ *                   type: number
+ *                   description: The warning level for low stock
+ *                 categoryId:
+ *                   type: string
+ *                   description: The ID of the category the product belongs to
+ *       400:
+ *         description: Invalid input
+ */
 ProductRoute.put('/:id', (req, res) => {
     const updatedProduct: Product = req.body;
     const response = ProductService.handleUpdateProduct(req)

@@ -49,6 +49,7 @@ const connectDB = async () => {
 };
 connectDB();
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use(express.json({ limit: '10mb' }));
 app.use(cors({origin:'*', optionsSuccessStatus: 200}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router);
