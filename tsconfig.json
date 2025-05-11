@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "nodenext", // Use Node.js-style module resolution with ES modules
+    "target": "es2021", // Target ES2021 for modern JavaScript features
+    "moduleResolution": "nodenext", // Resolve modules in Node.js style
+    "esModuleInterop": true, // Ensure compatibility with CommonJS and ES modules
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+    "strict": true, // Enable strict type checking
+    "resolveJsonModule": true, // Allow importing JSON files
+    "outDir": "./dist", // Output directory for compiled JavaScript files
+    "rootDir": "./src", // Root directory for TypeScript source files
+  }
+}
