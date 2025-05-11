@@ -233,3 +233,71 @@ ProductRoute.delete('/:id', async (req, res) => {
     res.status(200).send(response)
 });
 
+/**
+ * @swagger
+ * /products/{id}/images:
+ *   post:
+ *     summary: Upload Base64 images and associate them with a product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the product to associate the images with
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   description: Base64 encoded image string
+ *                 example: ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAAAAAA..."]
+ *     responses:
+ *       200:
+ *         description: Images uploaded and associated with the product successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the product
+ *                 name:
+ *                   type: string
+ *                   description: The name of the product
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: List of Base64 encoded image strings associated with the product
+ *       400:
+ *         description: Invalid input (e.g., images not provided or not an array)
+ *       500:
+ *         description: Internal server error
+ */
+// Upload Base64 images and associate them with a product
+ProductRoute.post('/:id/images', async (req, res) => {
+    try {
+        
+        const { images } = req.body; // Expecting an array of Base64 strings
+
+        if (!Array.isArray(images) || images.length === 0) {
+            return res.status(400).json({ error: 'Images must be an array of Base64 strings' });
+        }
+
+        // Update the product with the new images
+        const updatedProduct = await ProductService.addBase64ImagesToProduct(req);
+
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.error('Error uploading images:', error);
+        res.status(500).json({ error: 'Failed to upload images' });
+    }
+});
