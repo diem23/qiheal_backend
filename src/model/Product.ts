@@ -7,6 +7,7 @@ export default interface Product{
     stockQty?: number;
     warningLevel?: number;
     categoryId: Types.ObjectId;
+    images?: string[];
 }
 export const DOCUMENT_NAME = 'Products';
 export const COLLECTION_NAME = 'Products';
@@ -17,6 +18,7 @@ const schema = new Schema<Product>({
     stockQty: {type: Schema.Types.Number, required: true},
     warningLevel: {type: Schema.Types.Number, required: true},
     categoryId: {type: Schema.Types.ObjectId, ref: "Category"},
+    images: {type: [Schema.Types.String], required: true},
 }, {
     timestamps: true,
 })

@@ -5,6 +5,10 @@ import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import cors from "cors"
+
+//onsole.log("DB_URL: ",process.env.DB_URL);
+const mongoURL = 'mongodb://localhost:27017/CommercialWeb'
+
 //import router from './routes';
 const app = express();
 const port = 3000;
@@ -38,7 +42,7 @@ const swaggerOptions = {
 // Kết nối đến MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/CommercialWeb', {
+    await mongoose.connect(mongoURL, {
       dbName: 'CommercialWeb',
     });
     console.log('MongoDB connected');

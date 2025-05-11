@@ -30,11 +30,21 @@ const del = async (id: Types.ObjectId) => {
     const deletedProduct = await ProductModel.findByIdAndDelete(id)
     return deletedProduct
 }
+const updateImages = async (id: mongoose.Types.ObjectId, base64Images: string[]) => {
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+        id,
+        { $push: { images: { $each: base64Images } } }, // Add new Base64 images to the array
+        { new: true }
+    ).exec();
+
+    return updatedProduct;
+};
 const ProductRepo = {
     getAlls,
     getById,
     create,
     update,
     del,
+    updateImages
 }
 export default ProductRepo
