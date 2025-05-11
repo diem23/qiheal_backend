@@ -15,7 +15,12 @@ ProductRoute.get('/', async(req,  res) => {
     const response = await ProductService.handleGetProducts(req)
     
     console.log('Response:', response); // Debug log
-    res.status(200).json(response);
+
+    res.status(200).json({
+        message: 'Get all products successfully',
+        count: response?.length,
+        data: response,
+    });
 });
 /**
     * @swagger
@@ -36,7 +41,10 @@ ProductRoute.get('/', async(req,  res) => {
 ProductRoute.get('/:id', async (req, res) => {
     const reponse = await ProductService.handleGetProductById(req)
     console.log('Response:', reponse); // Debug log
-    res.send(reponse)
+    if (!reponse) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).send(reponse)
 });
 /**
  * @swagger
@@ -119,8 +127,15 @@ ProductRoute.post('/', async (req, res) => {
 );
 /**
  * @swagger
- * /products:
- *   post:
+ * /products/{id}:
+ *   put:
+ *     parameters:
+*      - in: path
+*        name: id
+*        required: true
+*        description: The id of the product to update
+*        schema:
+*        type: string
  *     summary: Update a new product
  *     requestBody:
  *       required: true
@@ -155,7 +170,7 @@ ProductRoute.post('/', async (req, res) => {
  *                 example: "645b1f2e8f1b2c001c8e4d3a"
  *     responses:
  *       201:
- *         description: Product created successfully
+ *         description: Product updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -186,13 +201,35 @@ ProductRoute.post('/', async (req, res) => {
  *       400:
  *         description: Invalid input
  */
-ProductRoute.put('/:id', (req, res) => {
-    const updatedProduct: Product = req.body;
-    const response = ProductService.handleUpdateProduct(req)
-    res.send(response)
+ProductRoute.put('/:id', async (req, res) => {
+    //const updatedProduct: Product = req.body;
+    const response = await ProductService.handleUpdateProduct(req)
+    if (!response) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).send(response)
 });
-ProductRoute.delete('/:id', (req, res) => {
-    const response = ProductService.handleDeleteProduct(req)
-    res.send(response)
+/**
+    * @swagger
+    * /products/{id}:
+    *   delete:
+    *     parameters:
+    *      - in: path
+    *        name: id
+    *        required: true
+    *        description: The id of the product to delete
+    *        schema:
+    *        type: string
+    *     summary: Delete a product by id
+    *     responses:
+    *       200:
+    *         description: delete a product
+    */
+ProductRoute.delete('/:id', async (req, res) => {
+    const response = await ProductService.handleDeleteProduct(req)
+    if (!response) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).send(response)
 });
 

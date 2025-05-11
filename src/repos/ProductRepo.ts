@@ -14,15 +14,19 @@ const create = async (
     product: Product,
     //accessTokenKey: string,
 )  => {
+    //console.log("product: ", product);
     const newProduct = await ProductModel.create(product)
     return newProduct
 }
 
-const update = async (id: string, product: any) => {
-    const updatedProduct = await ProductModel.findByIdAndUpdate(id, product, { new: true })
+const update = async (id: Types.ObjectId, product: any) => {
+    //console.log("product: ", product);
+    //console.log("id: ", id);
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, product, { new: true }).exec()
+    //console.log("updatedProduct: ", updatedProduct);
     return updatedProduct
 }
-const del = async (id: string) => {
+const del = async (id: Types.ObjectId) => {
     const deletedProduct = await ProductModel.findByIdAndDelete(id)
     return deletedProduct
 }
