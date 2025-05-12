@@ -23,7 +23,7 @@ const swaggerOptions = {
       },
       servers: [
           {
-              url: `http://0.0.0.0:${port}/api`,
+              url: 'https://qiheal-backend.onrender.com/api',
           },
       ],
  components: {
