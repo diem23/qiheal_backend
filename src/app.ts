@@ -56,6 +56,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cors({origin:'*', optionsSuccessStatus: 200}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router);
+console.log('port: ', port);
 app.listen(port as number,'0.0.0.0', () => {
   return console.log('Express is listening at render');
 });
