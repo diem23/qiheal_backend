@@ -10,7 +10,7 @@ dotenv.config();
 
 const mongoURL = process.env.DEPLOYMENT_DB_URL || process.env.LOCAL_DB_URL || "";
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT  || 3000;
 
 // Swagger definition
 const swaggerOptions = {
@@ -56,8 +56,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cors({origin:'*', optionsSuccessStatus: 200}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router);
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+app.listen(port as number,'0.0.0.0', () => {
+  return console.log('Express is listening at render');
 });
 
 export default app;
