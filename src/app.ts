@@ -8,9 +8,9 @@ import cors from "cors"
 import dotenv from 'dotenv';
 dotenv.config();
 
-const mongoURL = process.env.DEPLOYMENT_DB_URL || process.env.LOCAL_DB_URL || "";
+const mongoURL = process.env.DEPLOYMENT_DB_URL || "";
 const app = express();
-const port = process.env.PORT  || 3000;
+const port = process.env.PORT || 4000; 
 
 // Swagger definition
 const swaggerOptions = {
@@ -23,7 +23,7 @@ const swaggerOptions = {
       },
       servers: [
           {
-              url: `http://localhost:${port}/api`,
+              url: `http://0.0.0.0:${port}/api`,
           },
       ],
  components: {
