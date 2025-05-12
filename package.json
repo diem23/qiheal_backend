@@ -9,7 +9,7 @@
     "dev": "npx nodemon",
     "build": "tsc",                
     "vercel-build": "npm run build",
-    "deploy": "tsc && node --max_old_space_size=4096 dist/app.js --host 0.0.0.0"
+    "deploy": "node --max_old_space_size=4096 dist/app.js --host 0.0.0.0"
   },
   "nodemonConfig": {
     "watch": [
