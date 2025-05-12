@@ -5,11 +5,10 @@ import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import cors from "cors"
+import dotenv from 'dotenv';
+dotenv.config();
 
-//onsole.log("DB_URL: ",process.env.DB_URL);
-const mongoURL = 'mongodb://localhost:27017/CommercialWeb'
-
-//import router from './routes';
+const mongoURL = process.env.DEPLOYMENT_DB_URL || process.env.LOCAL_DB_URL || "";
 const app = express();
 const port = 3000;
 
