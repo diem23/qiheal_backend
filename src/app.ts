@@ -10,7 +10,7 @@ dotenv.config();
 
 const mongoURL = process.env.DEPLOYMENT_DB_URL || process.env.LOCAL_DB_URL || "";
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Swagger definition
 const swaggerOptions = {
