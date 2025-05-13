@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon",
-    "build": "tsc",                
+    "build": "node swagger.js && tsc",
     "vercel-build": "npm run build",
+    "swagger-autogen": "node swagger.js",
     "deploy": "node --max_old_space_size=4096 dist/app.js --host 0.0.0.0"
   },
   "nodemonConfig": {
@@ -35,6 +36,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "eslint": "^9.26.0",
     "globals": "^16.0.0",
+    "swagger-autogen": "^2.23.7",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0"
   },

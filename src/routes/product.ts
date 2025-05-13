@@ -10,12 +10,12 @@ export const ProductRoute=express.Router()
     *     responses:
     *       200:
     *         description: A list of products
+    *       404:
+    *         description: Not found
     */
 ProductRoute.get('/', async(req,  res) => {
+    // #swagger.tags = ['Product']
     const response = await ProductService.handleGetProducts(req)
-    
-    console.log('Response:', response); // Debug log
-
     res.status(200).json({
         message: 'Get all products successfully',
         count: response?.length,
@@ -39,8 +39,8 @@ ProductRoute.get('/', async(req,  res) => {
     *         description: a product
     */
 ProductRoute.get('/:id', async (req, res) => {
+    // #swagger.tags = ['Product']
     const reponse = await ProductService.handleGetProductById(req)
-    console.log('Response:', reponse); // Debug log
     if (!reponse) {
         return res.status(404).json({ message: 'Product not found' });
     }
@@ -120,7 +120,21 @@ ProductRoute.get('/:id', async (req, res) => {
  *         description: Invalid input
  */
 ProductRoute.post('/', async (req, res) => {
-    //console.log('Request body:', req.body); // Debug log
+     
+        // #swagger.tags = ['Product']
+        /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Add a user',
+            schema: { 
+                $name: "Office Chair",
+                $desc: "A comfortable office chair with adjustable height",
+                $price: 120.99,
+                $stockQty: 50,
+                $warningLevel: 10,
+                $categoryId: "645b1f2e8f1b2c001c8e4d3a"
+            }
+        } 
+        */
     const response = await ProductService.handleCreateProduct(req)
     res.send(response)
 }
@@ -202,7 +216,21 @@ ProductRoute.post('/', async (req, res) => {
  *         description: Invalid input
  */
 ProductRoute.put('/:id', async (req, res) => {
-    //const updatedProduct: Product = req.body;
+    // #swagger.tags = ['Product']
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Add a user',
+            schema: {
+                $_id: "645b1f2e8f1b2c001c8e4d3b", 
+                $name: "Office Chair",
+                $desc: "A comfortable office chair with adjustable height",
+                $price: 120.99,
+                $stockQty: 50,
+                $warningLevel: 10,
+                $categoryId: "645b1f2e8f1b2c001c8e4d3a"
+            }
+        } 
+        */
     const response = await ProductService.handleUpdateProduct(req)
     if (!response) {
         return res.status(404).json({ message: 'Product not found' });
@@ -226,6 +254,7 @@ ProductRoute.put('/:id', async (req, res) => {
     *         description: delete a product
     */
 ProductRoute.delete('/:id', async (req, res) => {
+    // #swagger.tags = ['Product']
     const response = await ProductService.handleDeleteProduct(req)
     if (!response) {
         return res.status(404).json({ message: 'Product not found' });
@@ -284,8 +313,8 @@ ProductRoute.delete('/:id', async (req, res) => {
  */
 // Upload Base64 images and associate them with a product
 ProductRoute.post('/:id/images', async (req, res) => {
+    // #swagger.tags = ['Product']
     try {
-        
         const { images } = req.body; // Expecting an array of Base64 strings
 
         if (!Array.isArray(images) || images.length === 0) {

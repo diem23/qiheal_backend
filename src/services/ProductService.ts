@@ -31,8 +31,8 @@ const handleDeleteProduct = async (req: any) => {
 const addBase64ImagesToProduct = async (req: any) => {
     const productId: string = req.params.id;
     const base64Images = req.body.images; // Expecting an array of Base64 strings
-    console.log("base64Images: ", base64Images);
-    console.log("productId: ", productId);
+    //console.log("base64Images: ", base64Images);
+    //console.log("productId: ", productId);
     if (!Types.ObjectId.isValid(productId)) {
         throw new Error('Invalid Product ID');
     }
