@@ -1,0 +1,43 @@
+const swaggerAutogen = require('swagger-autogen')();
+
+const doc = {
+  info: {
+    title: 'My API',
+    description: 'API documentation using Swagger',
+    version: '1.0.0',
+  },
+  servers: [
+    {
+      url: '/api', // The base path for your API
+    },
+  ],
+  tags:[
+    {
+        name: 'User',
+        description: 'User related endpoints',
+    },
+    {
+        name: 'Product',
+        description: 'Product related endpoints',
+    },
+    {
+        name: 'Order',
+        description: 'Order related endpoints',
+    },
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
+  definitions: {}, // Add any reusable schemas here
+};
+
+const outputFile = './swagger_output.json'; // The generated Swagger JSON file
+const endpointsFiles = ['./src/app.ts']; // The entry point of your application
+
+swaggerAutogen(outputFile, endpointsFiles, doc);
