@@ -1,5 +1,19 @@
 import mongoose, { Types } from "mongoose"
 import Product, { ProductModel } from "../model/Product"
+const search = async (keyword: string, page: number, limit: number): Promise<Product[] | null> => {
+    const products = await ProductModel.find({
+        $or: [
+            { name: { $regex: '%' + keyword + '%', $options: "i" } },
+            { desc: { $regex: keyword, $options: "i" } }
+        ]
+    })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean<Product[]>()
+        .exec()
+
+    return products
+}
 const getAlls = async ():Promise<Product[] | null> => {
     const products = await ProductModel.find().lean<Product[]>().exec()
     
@@ -40,6 +54,7 @@ const updateImages = async (id: mongoose.Types.ObjectId, base64Images: string[])
     return updatedProduct;
 };
 const ProductRepo = {
+    search,
     getAlls,
     getById,
     create,

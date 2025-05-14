@@ -1,6 +1,15 @@
 import { Types } from "mongoose"
 import ProductRepo from "../repos/ProductRepo"
-
+const handleSearch = async (req: any) => {
+    const keyword = req.body.keyword;
+    const page = parseInt(req.body.page) || 1
+    const limit = parseInt(req.body.limit) || 10
+    //console.log("keyword: ", keyword);
+    //console.log("page: ", page);
+    //console.log("limit: ", limit);
+    const products = await ProductRepo.search(keyword, page, limit)
+    return products
+}
 const handleGetProducts = async (req: any) => {
     const products = await ProductRepo.getAlls()
     //console.log(products)
@@ -45,6 +54,7 @@ const addBase64ImagesToProduct = async (req: any) => {
     return updatedProduct;
 };
 const ProductService = {
+    handleSearch,
     addBase64ImagesToProduct,
     handleGetProducts,
     handleGetProductById,
