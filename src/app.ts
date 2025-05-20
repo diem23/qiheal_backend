@@ -4,11 +4,13 @@ import router from "./routes/index";
 import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express"
 import cors from "cors"
+import fileUpload from "express-fileupload"        
 import dotenv from 'dotenv';
 dotenv.config();
 
 const mongoURL = process.env.DEPLOYMENT_DB_URL || "";
 const app = express();
+app.use(fileUpload())
 const port = process.env.PORT || 4000; 
 
 

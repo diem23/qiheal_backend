@@ -23,6 +23,9 @@ const handleGetProductById = async (req: any) => {
     return product
 }
 const handleCreateProduct = async (req: any) => {
+   
+    //console.log("filesBase64: ", filesBase64);
+    console.log("req.body: ", req.body?.body);
     const newProduct = await ProductRepo.create(req.body)
     return newProduct
 }   
@@ -39,16 +42,17 @@ const handleDeleteProduct = async (req: any) => {
 }
 const addBase64ImagesToProduct = async (req: any) => {
     const productId: string = req.params.id;
-    const base64Images = req.body.images; // Expecting an array of Base64 strings
-    //console.log("base64Images: ", base64Images);
-    //console.log("productId: ", productId);
+    const files = req.files?.files;
+    const filesArray = Array.isArray(files) ? files : [files];
+    const filteredFiles = filesArray.filter((file: any) => typeof file === 'object' && file !== null);
+    const filesBase64: string [] = filteredFiles.map((file: any) => 'data:image/jpeg;base64,' + file?.data.toString('base64'));
     if (!Types.ObjectId.isValid(productId)) {
         throw new Error('Invalid Product ID');
     }
 
     const updatedProduct = await ProductRepo.updateImages(
         new Types.ObjectId(productId),
-        base64Images
+        filesBase64
     );
 
     return updatedProduct;

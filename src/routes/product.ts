@@ -54,6 +54,8 @@ ProductRoute.post('/', async (req, res) => {
             }
         } 
         */
+       
+        console.log("req.body: ", req.body);
     const response = await ProductService.handleCreateProduct(req)
     res.send(response)
 }
@@ -86,6 +88,19 @@ ProductRoute.delete('/:id', async (req, res) => {
     if (!response) {
         return res.status(404).json({ message: 'Product not found' });
     }
+    res.status(200).send(response)
+});
+ProductRoute.post('/upload/:id', async (req, res) => {
+    // #swagger.tags = ['Product']
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Add a user',
+            schema: { 
+                $images: ["public_id1", "public_id2"]
+            }
+        } 
+        */
+    const response = await ProductService.addBase64ImagesToProduct(req)
     res.status(200).send(response)
 });
 
