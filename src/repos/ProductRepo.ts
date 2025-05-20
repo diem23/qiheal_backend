@@ -1,5 +1,7 @@
 import mongoose, { Types } from "mongoose"
+import {v2 as cloudinary} from "cloudinary"
 import Product, { ProductModel } from "../model/Product"
+
 const search = async (keyword: string, page: number, limit: number): Promise<Product[] | null> => {
     const products = await ProductModel.find({
         $or: [
@@ -29,8 +31,15 @@ const create = async (
     //accessTokenKey: string,
 )  => {
     //console.log("product: ", product);
+    try{
+    
     const newProduct = await ProductModel.create(product)
     return newProduct
+} catch (error) {
+    console.error("Error uploading images to Cloudinary:", error);
+    throw new Error("Failed to upload images");
+
+}
 }
 
 const update = async (id: Types.ObjectId, product: any) => {
@@ -44,10 +53,28 @@ const del = async (id: Types.ObjectId) => {
     const deletedProduct = await ProductModel.findByIdAndDelete(id)
     return deletedProduct
 }
-const updateImages = async (id: mongoose.Types.ObjectId, base64Images: string[]) => {
+const updateImages = async (id: Types.ObjectId, files: string[]) => {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    })
+    let images: string[] = []
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        //console.log("file: ", file);
+        if (!file) {
+            console.log("No file found");
+            continue;
+        }
+        const uploadResult = await cloudinary.uploader.upload(file);
+        images.push(uploadResult.public_id);
+    }
+    
+    
     const updatedProduct = await ProductModel.findByIdAndUpdate(
         id,
-        { $push: { images: { $each: base64Images } } }, // Add new Base64 images to the array
+        { $push: { images: { $each: images } } }, // Add new Base64 images to the array
         { new: true }
     ).exec();
 
