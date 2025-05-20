@@ -92,14 +92,16 @@ ProductRoute.delete('/:id', async (req, res) => {
 });
 ProductRoute.post('/upload/:id', async (req, res) => {
     // #swagger.tags = ['Product']
-    /* #swagger.parameters['body'] = {
-            in: 'body',
-            description: 'Add a user',
-            schema: { 
-                $images: ["public_id1", "public_id2"]
-            }
-        } 
-        */
+    /*
+        #swagger.consumes = ['multipart/form-data']  
+        #swagger.parameters['files'] = {
+            in: 'formData',
+            type: 'array',
+            required: true,
+            description: 'Some description...',
+            collectionFormat: 'multi',
+            items: { type: 'file' }
+        } */
     const response = await ProductService.addBase64ImagesToProduct(req)
     res.status(200).send(response)
 });

@@ -20,7 +20,7 @@ const connectDB = async () => {
     await mongoose.connect(mongoURL, {
       dbName: 'CommercialWeb',
     });
-    console.log('MongoDB connected');
+    console.log('MongoDB connected: ', mongoURL);
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
     process.exit(1);
@@ -36,7 +36,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/api', router);
 console.log('port: ', port);
 app.listen(port as number,'0.0.0.0', () => {
-  return console.log('Express is listening at render');
+  return console.log('http://localhost:' + port);
 });
 
 export default app;

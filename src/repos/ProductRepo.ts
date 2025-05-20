@@ -71,9 +71,10 @@ const updateImages = async (id: mongoose.Types.ObjectId, files: string[]) => {
         images.push(uploadResult.public_id);
     }
     
+    
     const updatedProduct = await ProductModel.findByIdAndUpdate(
         id,
-        { $push: { images: { $each: files } } }, // Add new Base64 images to the array
+        { $push: { images: { $each: images } } }, // Add new Base64 images to the array
         { new: true }
     ).exec();
 
