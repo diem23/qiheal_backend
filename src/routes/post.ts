@@ -65,12 +65,10 @@ PostRouter.post("/", async (req, res) => {
             in: 'body',
             description: 'Add a user',
             schema: { 
+                $image: "https://example.com/image.jpg",
                 $title: "Office Chair",
-                $desc: "A comfortable office chair with adjustable height",
-                $price: 120.99,
-                $stockQty: 50,
-                $warningLevel: 10,
-                $categoryId: "645b1f2e8f1b2c001c8e4d3a"
+                $content: "A comfortable office chair with adjustable height",
+                $relativePosts: ["645b1f2e8f1b2c001c8e4d3a", "645b1f2e8f1b2c001c8e4d3b"],
             }
         } 
         */
@@ -103,3 +101,16 @@ PostRouter.delete("/:id", async (req, res) => {
     res.send(response)
 }
 );
+PostRouter.post("/upload/:id", async (req, res) => {
+    // #swagger.tags = ['Post']
+    /*
+        #swagger.consumes = ['multipart/form-data']  
+        #swagger.parameters['singleFile'] = {
+            in: 'formData',
+            type: 'file',
+            required: 'true',
+            description: 'Some description...',
+    } */
+    const response = await PostService.addBase64ImagesToPost(req)
+    res.send(response)
+});

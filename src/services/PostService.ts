@@ -46,6 +46,21 @@ const handleDeletePost = async (req: any) => {
     const deletedPost = await PostRepo.del(postId)
     return deletedPost
 }
+const addBase64ImagesToPost = async (req: any) => {
+    const postId: string = req.params.id;
+    const files = req.files?.singleFile;
+    const fileBase64 = 'data:image/jpeg;base64,' + files?.data.toString('base64');
+    if (!Types.ObjectId.isValid(postId)) {
+        throw new Error('Invalid Product ID');
+    }
+
+    const updatedProduct = await PostRepo.updateImages(
+        new Types.ObjectId(postId),
+        fileBase64
+    );
+
+    return updatedProduct;
+};
 const PostService = {
     handleChooseRelatedPosts,
     handleSearch,
@@ -54,5 +69,6 @@ const PostService = {
     handleCreatePost,
     handleUpdatePost,
     handleDeletePost,
+    addBase64ImagesToPost
 }
 export default PostService

@@ -10,7 +10,7 @@ export default interface Post{
 export const DOCUMENT_NAME = 'Posts';
 export const COLLECTION_NAME = 'Posts';
 const schema = new Schema<Post>({
-    image: {type: Schema.Types.String, required: true},
+    image: {type: Schema.Types.String, required: false},
     title: {type: Schema.Types.String, required: true},
     content: {type: Schema.Types.String, required: true},
     relativePosts: [{type: Schema.Types.ObjectId, ref: "Posts"}]

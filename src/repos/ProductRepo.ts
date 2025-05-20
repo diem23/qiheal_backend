@@ -53,7 +53,7 @@ const del = async (id: Types.ObjectId) => {
     const deletedProduct = await ProductModel.findByIdAndDelete(id)
     return deletedProduct
 }
-const updateImages = async (id: mongoose.Types.ObjectId, files: string[]) => {
+const updateImages = async (id: Types.ObjectId, files: string[]) => {
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
