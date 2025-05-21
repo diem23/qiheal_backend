@@ -1,0 +1,31 @@
+import bcrypt from 'bcrypt';
+import UserRepo from '../repos/UserRepo';
+import { sign } from 'jsonwebtoken';
+const handleSignup = async (req: any) => {
+    const oldUser = await UserRepo.findByUsername(req.body.username);
+    if (oldUser) throw new Error("User already registered!!!")
+    //console.log("username: ", username);
+    //console.log("password: ", password);
+    const user = await UserRepo.create(req.body);
+    return user;
+}
+const handleLogin = async (req: any)=>{
+    const user = await UserRepo.findByUsername(req.body.username);
+    if (!user) throw new Error("User not found!!!")
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) throw new Error("Password is incorrect!!!")
+    const userData = {
+        username: user.username,
+        role: user.role
+    }
+    const secretKey = process.env.ACCESS_TOKEN_SECRET;
+    if (!secretKey) throw new Error("Secret key not found!!!")
+    const accessToken = sign(userData, secretKey);
+    return {
+        accessToken: accessToken
+    }
+}
+export default{
+    handleSignup,
+    handleLogin
+}
