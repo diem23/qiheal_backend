@@ -1,9 +1,8 @@
 import express from "express";
-
-export const PostRouter = express.Router()
 import PostService from "../services/PostService";
-import Post from "../model/Post";
-import { Types } from "mongoose";
+export const PostRouter = express.Router()
+
+
 PostRouter.post("/chooseRelatedPosts/:id", async (req, res) => {
     // #swagger.tags = ['Post']
     /* #swagger.parameters['body'] = {

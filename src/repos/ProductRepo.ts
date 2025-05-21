@@ -36,8 +36,7 @@ const create = async (
     const newProduct = await ProductModel.create(product)
     return newProduct
 } catch (error) {
-    console.error("Error uploading images to Cloudinary:", error);
-    throw new Error("Failed to upload images");
+    throw new Error("Failed to create product");
 
 }
 }
