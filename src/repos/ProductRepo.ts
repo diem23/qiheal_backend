@@ -32,12 +32,11 @@ const create = async (
 )  => {
     //console.log("product: ", product);
     try{
-    
+    if (!product.actualPrice) product.actualPrice = product.price;
     const newProduct = await ProductModel.create(product)
     return newProduct
 } catch (error) {
-    console.error("Error uploading images to Cloudinary:", error);
-    throw new Error("Failed to upload images");
+    throw new Error("Failed to create product");
 
 }
 }

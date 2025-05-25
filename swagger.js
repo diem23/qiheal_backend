@@ -25,14 +25,27 @@ const doc = {
         description: 'Order related endpoints',
     },
   ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      },
-    },
+//   components: {
+//     securitySchemes: {
+//       bearerAuth: {
+//         type: 'http',
+//         scheme: 'bearer',
+//         bearerFormat: 'JWT',
+//       },
+//     },
+//   },
+//   security: [
+//   {
+//     bearerAuth: []
+//   }
+//  ],
+securityDefinitions: {
+    apiKeyAuth: {
+      type: 'apiKey',
+      in: 'header', // can be 'header', 'query' or 'cookie'
+      name: 'authorization', // name of the header, query parameter or cookie
+      description: 'Some description...'
+    }
   },
   definitions: {}, // Add any reusable schemas here
 };
