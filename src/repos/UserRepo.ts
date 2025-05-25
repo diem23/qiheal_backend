@@ -7,6 +7,18 @@ const getAlls = async ():Promise<User[] | null> => {
     const users = await UserModel.find().lean<User[]>().exec()
     return users
 }
+const getById = async (id: string): Promise<User|null> => {
+    const user = await UserModel.findById(id).lean().exec()
+    return user
+}
+const update = async (id: string, user: any) => {
+    const updatedUser = await UserModel.findByIdAndUpdate(id, user, { new: true }).exec()
+    return updatedUser
+}
+const del = async (id: string) => {
+    const deletedUser = await UserModel.findByIdAndDelete(id)
+    return deletedUser
+}
 const create = async (user: User)=> {
     try{
         user.password = await bcrypt.hash(user.password,10)
@@ -19,5 +31,9 @@ const create = async (user: User)=> {
 }
 export default {
     findByUsername,
-    create
+    create,
+    getAlls,
+    getById,
+    update,
+    del
 }
