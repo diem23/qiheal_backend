@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt';
 import UserRepo from '../repos/UserRepo';
 import { sign } from 'jsonwebtoken';
+import { UserRole } from '../model/User';
 const handleSignup = async (req: any) => {
+    if (req.body.role.includes(UserRole.ADMIN)) {
+        throw new Error("Admin cannot login through this route!!!")
+    }
     const oldUser = await UserRepo.findByUsername(req.body.username);
     if (oldUser) throw new Error("User already registered!!!")
     //console.log("username: ", username);
@@ -10,6 +14,7 @@ const handleSignup = async (req: any) => {
     return user;
 }
 const handleLogin = async (req: any)=>{
+    
     const user = await UserRepo.findByUsername(req.body.username);
     if (!user) throw new Error("User not found!!!")
     const isMatch = await bcrypt.compare(req.body.password, user.password);

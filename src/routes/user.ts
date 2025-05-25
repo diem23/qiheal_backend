@@ -12,7 +12,7 @@ UserRoute.get('/', async (req, res) => {
         data: response,
     });
 });
-UserRoute.get('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
+UserRoute.get('/:id', verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
     const response = await UserService.handleGetUserById(req);
     if (!response) {
         return res.status(404).json({ message: 'User not found' });
@@ -62,7 +62,7 @@ UserRoute.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
         message: 'User update failed',
     });
 });
-UserRoute.delete('/:id', async (req, res) => {
+UserRoute.delete('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     const response = await UserService.handleDeleteUser(req);
     if (response) {
         return res.status(200).json({
