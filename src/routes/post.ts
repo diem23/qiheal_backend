@@ -1,9 +1,11 @@
 import express from "express";
 import PostService from "../services/PostService";
+import verifyRoles from "../middleware/verifyRoles";
+import { UserRole } from "../model/User";
 export const PostRouter = express.Router()
 
 
-PostRouter.post("/chooseRelatedPosts/:id", async (req, res) => {
+PostRouter.post("/chooseRelatedPosts/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Post']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -19,7 +21,7 @@ PostRouter.post("/chooseRelatedPosts/:id", async (req, res) => {
         data: response,
     });
 });
-PostRouter.post("/search", async (req, res) => {
+PostRouter.post("/search",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -38,7 +40,7 @@ PostRouter.post("/search", async (req, res) => {
         data: response,
     });
 });
-PostRouter.get("/", async (req, res) => {
+PostRouter.get("/",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     const response = await PostService.handleGetPosts(req)
     res.status(200).json({
@@ -47,7 +49,7 @@ PostRouter.get("/", async (req, res) => {
         data: response,
     });
 });
-PostRouter.get("/:id", async (req, res) => {
+PostRouter.get("/:id",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     const reponse = await PostService.handleGetPostById(req)
     if
@@ -58,7 +60,7 @@ PostRouter.get("/:id", async (req, res) => {
     res.status(200).send(reponse)
 }
 );
-PostRouter.post("/", async (req, res) => {
+PostRouter.post("/",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -75,7 +77,7 @@ PostRouter.post("/", async (req, res) => {
     res.send(response)
 }
 );
-PostRouter.put("/:id", async (req, res) => {
+PostRouter.put("/:id",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -94,13 +96,13 @@ PostRouter.put("/:id", async (req, res) => {
     res.send(response)
 }
 );
-PostRouter.delete("/:id", async (req, res) => {
+PostRouter.delete("/:id",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     const response = await PostService.handleDeletePost(req)
     res.send(response)
 }
 );
-PostRouter.post("/upload/:id", async (req, res) => {
+PostRouter.post("/upload/:id",verifyRoles(UserRole.ADMIN,UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Post']
     /*
         #swagger.consumes = ['multipart/form-data']  

@@ -12,16 +12,24 @@ AuthenRouter.post('/signup', async (req, res) => {
             }
         }
         */
-    const response = await AuthenService.handleSignup(req);
-    if (response) {
-        return res.status(200).json({
-            message: 'Signup successfully',
-            data: response,
+    try {
+        const response = await AuthenService.handleSignup(req);
+        if (response) {
+            return res.status(200).json({
+                message: 'Signup successfully',
+                data: response,
+            });
+        }
+        return res.status(400).json({
+        message: 'Signup failed',
+        });  
+    } catch (error) {
+        console.error('Signup error:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : String(error)
         });
     }
-    return res.status(400).json({
-        message: 'Signup failed',
-    });
 }
 );
 AuthenRouter.post('/login', async (req, res)=>{
@@ -35,14 +43,23 @@ AuthenRouter.post('/login', async (req, res)=>{
             }
         }
         */
-    const response = await AuthenService.handleLogin(req);
-    if (response) {
-        return res.status(200).json({
-            message: 'Login successfully',
-            data: response,
+    try{
+        const response = await AuthenService.handleLogin(req);
+        if (response) {
+            return res.status(200).json({
+                message: 'Login successfully',
+                data: response,
+            });
+        }
+        return res.status(400).json({
+            message: 'Login failed',
         });
     }
-    return res.status(400).json({
-        message: 'Login failed',
-    });
+    catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: 'An unexpected error occurred'
+        });
+    }
 })

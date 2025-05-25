@@ -7,6 +7,8 @@ export default interface Product{
     stockQty?: number;
     warningLevel?: number;
     categoryId: Types.ObjectId;
+    slug?: string;
+    actualPrice?: number;
     images?: string[];
 }
 export const DOCUMENT_NAME = 'Products';
@@ -19,6 +21,8 @@ const schema = new Schema<Product>({
     warningLevel: {type: Schema.Types.Number, required: true},
     categoryId: {type: Schema.Types.ObjectId, ref: "Category"},
     images: {type: [Schema.Types.String], required: true},
+    slug: {type: Schema.Types.String, required: true},
+    actualPrice: {type: Schema.Types.Number, required: true, default: 0},
 }, {
     timestamps: true,
 })

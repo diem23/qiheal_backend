@@ -32,7 +32,7 @@ const create = async (
 )  => {
     //console.log("product: ", product);
     try{
-    
+    if (!product.actualPrice) product.actualPrice = product.price;
     const newProduct = await ProductModel.create(product)
     return newProduct
 } catch (error) {
