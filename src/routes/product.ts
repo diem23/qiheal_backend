@@ -1,6 +1,7 @@
 import express from 'express';
 import ProductService from '../services/ProductService';
-import Product from '../model/Product';
+import verifyRoles from '../middleware/verifyRoles';
+import { UserRole } from '../model/User';
 export const ProductRoute=express.Router()
 ProductRoute.post('/search', async (req, res) => {
     // #swagger.tags = ['Product']
@@ -22,7 +23,7 @@ ProductRoute.post('/search', async (req, res) => {
     });
 });
 ProductRoute.get('/', async(req,  res) => {
-    // #swagger.tags = ['Product']
+    
     const response = await ProductService.handleGetProducts(req)
     res.status(200).json({
         message: 'Get all products successfully',
@@ -30,7 +31,7 @@ ProductRoute.get('/', async(req,  res) => {
         data: response,
     });
 });
-ProductRoute.get('/:id', async (req, res) => {
+ProductRoute.get('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
     // #swagger.tags = ['Product']
     const reponse = await ProductService.handleGetProductById(req)
     if (!reponse) {

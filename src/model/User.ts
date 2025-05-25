@@ -9,7 +9,7 @@ export default interface User {
     profilePic?: string
     username: string
     password: string
-    role?: string
+    role?: UserRole[]
     isActive?: boolean
 }
 export const DOCUMENT_NAME = 'Users'
@@ -18,7 +18,8 @@ const schema = new Schema<User>({
     profilePic: {type: Schema.Types.String, required: false},
     username: {type: Schema.Types.String, required: true},
     password: {type: Schema.Types.String, required: true},
-    role: {type: Schema.Types.String,  default: UserRole.CUSTOMER,enum: Object.values(UserRole)},
+    isActive: {type: Schema.Types.Boolean, default: true},
+    role: {type: [Schema.Types.String],  default: [UserRole.CUSTOMER],enum: Object.values(UserRole)},
 }, {
     timestamps: true,
 })
