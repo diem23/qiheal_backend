@@ -58,8 +58,8 @@ AuthenRouter.post('/login', async (req, res)=>{
     catch (error) {
         console.error('Login error:', error);
         return res.status(500).json({
-            message: 'Internal server error',
-            error: 'An unexpected error occurred'
+            //message: 'Internal server error',
+            error:  error instanceof Error ? error.message : String(error)
         });
     }
 })
