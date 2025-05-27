@@ -7,7 +7,6 @@ import cors from "cors"
 import fileUpload from "express-fileupload"        
 import dotenv from 'dotenv';
 dotenv.config();
-
 const mongoURL = process.env.DEPLOYMENT_DB_URL || "";
 const app = express();
 app.use(fileUpload())
@@ -34,9 +33,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cors({origin:'*', optionsSuccessStatus: 200}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/api' , router);
-console.log('port: ', port);
-app.listen(port as number,'0.0.0.0', () => {
-  return console.log('http://localhost:' + port);
-});
+app.listen(port as number,'0.0.0.0');
 
 export default app;

@@ -30,7 +30,7 @@ UserRoute.post('/', verifyRoles(UserRole.ADMIN), async (req, res) => {
             }
         } 
     */
-    const response = await UserService.handleCreateUser(req);
+    const response = await UserService.handleCreateUser(req.body);
     if (response) {
         return res.status(201).json({
             message: 'User created successfully',

@@ -11,6 +11,8 @@ const doc = {
       url: '/api', // The base path for your API
     },
   ],
+  schemes:['https'], // Use 'http' or 'https' based on your API
+  host: 'qiheal-backend.onrender.com', // The host of your API
   tags:[
     {
         name: 'User',
