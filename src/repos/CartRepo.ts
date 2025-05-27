@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
 import Cart, { CartModel } from "../model/Cart";
-import { CustomerLevelModel } from "../model/CustomerLevel";
 const getAll = async () => {
     const carts = await CartModel.find();
     return carts;
@@ -14,7 +13,7 @@ const create = async (Cart: Cart) => {
     return newCart;
 }
 const update = async (id: Types.ObjectId, Cart: Cart) => {
-    const updatedCart = await CartModel.findByIdAndUpdate(id, Cart, { new: true }).populate("items.product");
+    const updatedCart = await CartModel.findByIdAndUpdate(id, Cart, { new: true }).populate("products.product");
     return updatedCart;
 }
 const del = async (id: Types.ObjectId) => {

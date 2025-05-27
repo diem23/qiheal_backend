@@ -3,7 +3,7 @@ import Product, { ProductModel } from "./Product"
 export default interface Cart {
     _id?: Types.ObjectId
     products: {
-        product: Types.ObjectId
+        product: Types.ObjectId | Product
         quantity: number
     }[]
     totalPrice: number

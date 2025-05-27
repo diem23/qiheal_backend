@@ -33,10 +33,20 @@ CartRouter.put("/:id", async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Update a cart',
-            schema: { 
-                $productId: "645b1f2e8f1b2c001c8e4d3a",
-                $quantity: 2
-            }
+            schema: 
+                {
+                    "products": [
+                        {
+                            "product": "645b1f2e8f1b2c001c8e4d3a",
+                            "quantity": 2
+                        },
+                        {
+                            "product": "645b1f2e8f1b2c001c8e4d3b",
+                            "quantity": 3
+                        }
+                    ]
+                }
+            
         }
         */
     try {

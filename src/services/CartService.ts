@@ -3,21 +3,19 @@ import Cart from "../model/Cart";
 import { CartRepo } from "../repos/CartRepo";
 import { CartModel } from "../model/Cart";
 import Product from "../model/Product";
-type ProductItem = {
-    product: Product,
-    quantity: number
-}
 const calTotalPrice = async (cartId: Types.ObjectId) => {
-    // const cart = await handleGetCartById(cartId);
-    // //const cart = await CartModel.findById(cartId).populate('products').exec();
-    // if (!cart) {
-    //     throw new Error("Cart not found");
-    // }
-    // const totalPrice = cart.products.reduce((total, item) => {
-    //     const product = item as ProductItem;
-    //     return total + (item.product.actualPrice? item.product.actualPrice: 0 * item.quantity);
-    // }, 0);
-    // return totalPrice
+    const cart = await handleGetCartById(cartId);
+    //const cart = await CartModel.findById(cartId).populate('products').exec();
+    if (!cart) {
+        throw new Error("Cart not found");
+    }
+    let totalPrice = cart.products.reduce((total, item) => {
+        item.product = item.product as Product; // Ensure item.product is of type Product
+        return total + (((item.product.actualPrice)? item.product.actualPrice: 0) * item.quantity);
+    }, 0);
+    cart.totalPrice = totalPrice;
+    const newCart = await CartRepo.update(cartId, cart); // Update the cart with the new total price
+    return newCart
 }
 const handleGetCarts = async () => {
     // Here you would typically call your CartRepo.getAll method
@@ -26,13 +24,19 @@ const handleGetCarts = async () => {
     return carts;
 }
 const handleUpdateCart = async (cartId: Types.ObjectId, cart: Cart) => {
-    //cart.totalPrice = calTotalPrice(cart);
+    const existingCart = await handleGetCartById(cartId);
+    if (!existingCart) {
+        throw new Error("Cart not found");
+    }
+    existingCart.products = cart.products;
+    //console.log("Existing Cart:", existingCart);
+    let updatedCart = await CartRepo.update(cartId, existingCart)
+    updatedCart = await calTotalPrice(cartId);
     // Here you would typically call your CartRepo.update method
     // For example:
     // const updatedCart = await CartRepo.update(cartId, cart);
     
     // Simulating the update operation
-    const updatedCart = CartRepo.update(cartId, cart)
     return updatedCart;
 }
 const handleCreateCart = async (cart: Cart) => {

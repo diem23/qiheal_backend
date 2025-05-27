@@ -29,7 +29,7 @@ CustomerLevelRouter.put("/:id", async (req, res) => {
             description: 'Update a customer level',
             schema: { 
                 $code: "Gold",
-                $discountPecent: 0.1,
+                $discountPercent: 0.1,
                 $threshold: 1000
             }
         }
