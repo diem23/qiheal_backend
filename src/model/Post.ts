@@ -6,6 +6,7 @@ export default interface Post{
     title: string;
     content: string;
     relativePosts: Types.ObjectId[];
+    isActive?: boolean
 }
 export const DOCUMENT_NAME = 'Posts';
 export const COLLECTION_NAME = 'Posts';
@@ -13,7 +14,9 @@ const schema = new Schema<Post>({
     image: {type: Schema.Types.String, required: false},
     title: {type: Schema.Types.String, required: true},
     content: {type: Schema.Types.String, required: true},
-    relativePosts: [{type: Schema.Types.ObjectId, ref: "Posts"}]
+    relativePosts: [{type: Schema.Types.ObjectId, ref: "Posts"}],
+    isActive: {type: Schema.Types.Boolean, default: true}
+
 }, {
     timestamps: true,
 })

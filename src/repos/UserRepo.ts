@@ -21,6 +21,9 @@ const del = async (id: string) => {
 }
 const create = async (user: User)=> {
     try{
+        if (!user.username || !user.password) {
+            throw new Error('Username and password are required!');
+        }
         user.password = await bcrypt.hash(user.password,10)
         const newUser = UserModel.create(user)
         return newUser

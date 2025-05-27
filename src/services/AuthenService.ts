@@ -13,11 +13,12 @@ const handleSignup = async (req: any) => {
     const user = await UserRepo.create(req.body);
     return user;
 }
-const handleLogin = async (req: any)=>{
+const handleLogin = async (userInfo: any)=>{
     
-    const user = await UserRepo.findByUsername(req.body.username);
+    const user = await UserRepo.findByUsername(userInfo.username);
     if (!user) throw new Error("User not found!!!")
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!user.password) throw new Error("Password is not set!!!")
+    const isMatch = await bcrypt.compare(userInfo.password, user.password);
     if (!isMatch) throw new Error("Password is incorrect!!!")
     const userData = {
         username: user.username,
