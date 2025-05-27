@@ -2,7 +2,9 @@ import express from "express";
 export const CartRouter = express.Router();
 import { CartService } from "../services/CartService";
 import { Types } from "mongoose";
-CartRouter.get("/", async (req, res) => {
+import verifyRoles from "../middleware/verifyRoles";
+import { UserRole } from "../model/User";
+CartRouter.get("/",verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
     const response = await CartService.handleGetCarts();
     res.status(200).json({
         message: "Get all carts successfully",
@@ -10,7 +12,7 @@ CartRouter.get("/", async (req, res) => {
         data: response,
     });
 });
-CartRouter.get("/:id", async (req, res) => {
+CartRouter.get("/:id",verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
     try{
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
@@ -29,7 +31,7 @@ CartRouter.get("/:id", async (req, res) => {
         });
     }
 });
-CartRouter.put("/:id", async (req, res) => {
+CartRouter.put("/:id",verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Update a cart',

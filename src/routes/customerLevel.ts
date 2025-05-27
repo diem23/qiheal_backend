@@ -1,8 +1,10 @@
 import express from "express";
 import { CustomerLevelService } from "../services/CustomerLevel";
 import { Types } from "mongoose";
+import verifyRoles from "../middleware/verifyRoles";
+import { UserRole } from "../model/User";
 export const CustomerLevelRouter = express.Router();
-CustomerLevelRouter.get("/", async (req, res) => {
+CustomerLevelRouter.get("/",verifyRoles(UserRole.ADMIN),  async (req, res) => {
     const response = await CustomerLevelService.handleGetCustomerLevels();
     res.status(200).json({
         message: "Get all customer levels successfully",
@@ -10,7 +12,7 @@ CustomerLevelRouter.get("/", async (req, res) => {
         data: response,
     });
 });
-CustomerLevelRouter.get("/:id", async (req, res) => {
+CustomerLevelRouter.get("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
             message: "Invalid customer level ID",
@@ -23,7 +25,7 @@ CustomerLevelRouter.get("/:id", async (req, res) => {
     }
     res.status(200).json(response);
 });
-CustomerLevelRouter.put("/:id", async (req, res) => {
+CustomerLevelRouter.put("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Update a customer level',
@@ -57,7 +59,7 @@ CustomerLevelRouter.put("/:id", async (req, res) => {
         });
     }
 });
-CustomerLevelRouter.post("/", async (req, res) => {
+CustomerLevelRouter.post("/",verifyRoles(UserRole.ADMIN), async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Create a customer level',
@@ -85,7 +87,7 @@ CustomerLevelRouter.post("/", async (req, res) => {
         });
     }
 });
-CustomerLevelRouter.delete("/:id", async (req, res) => {
+CustomerLevelRouter.delete("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
             message: "Invalid customer level ID",

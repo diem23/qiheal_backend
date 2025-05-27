@@ -3,9 +3,10 @@ import Customer from "../model/Customer";
 import { UserRole } from "../model/User";
 import { CustomerService } from "../services/CustomerService";
 import express from "express";
+import verifyRoles from "../middleware/verifyRoles";
 export const CustomerRouter = express.Router();
 
-CustomerRouter.get("/", async (req, res) => {
+CustomerRouter.get("/",verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Customer']
     const response = await CustomerService.handleGetCustomers();
     res.status(200).json({
@@ -14,7 +15,7 @@ CustomerRouter.get("/", async (req, res) => {
         data: response,
     });
 });
-CustomerRouter.get("/:id", async (req, res) => {
+CustomerRouter.get("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Customer']
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
@@ -28,7 +29,7 @@ CustomerRouter.get("/:id", async (req, res) => {
     }
     res.status(200).json(response);
 });
-CustomerRouter.put("/:id", async (req, res) => {
+CustomerRouter.put("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Customer']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -66,7 +67,7 @@ CustomerRouter.put("/:id", async (req, res) => {
         });
     }
 });
-CustomerRouter.delete("/:id", async (req, res) => {
+CustomerRouter.delete("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     try{
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
