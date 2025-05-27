@@ -1,3 +1,4 @@
+import User from "../model/User";
 import UserRepo from "../repos/UserRepo";
 
 const handleGetUsers = async (req: any) => {
@@ -9,8 +10,8 @@ const handleGetUserById = async (req: any) => {
     const user = await UserRepo.getById(userId);
     return user;
 }
-const handleCreateUser = async (req: any) => {
-    const newUser = await UserRepo.create(req.body);
+const handleCreateUser = async (user: User) => {
+    const newUser = await UserRepo.create(user);
     return newUser;
 }
 const handleUpdateUser = async (req: any) => {

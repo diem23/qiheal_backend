@@ -10,6 +10,7 @@ export default interface Product{
     slug?: string;
     actualPrice?: number;
     images?: string[];
+    isActive?: boolean
 }
 export const DOCUMENT_NAME = 'Products';
 export const COLLECTION_NAME = 'Products';
@@ -23,6 +24,7 @@ const schema = new Schema<Product>({
     images: {type: [Schema.Types.String], required: true},
     slug: {type: Schema.Types.String, required: true},
     actualPrice: {type: Schema.Types.Number, required: true, default: 0},
+    isActive: {type: Schema.Types.Boolean, required: true, default: true}
 }, {
     timestamps: true,
 })

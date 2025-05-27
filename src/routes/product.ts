@@ -39,7 +39,7 @@ ProductRoute.get('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (r
     }
     res.status(200).send(reponse)
 });
-ProductRoute.post('/',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
+ProductRoute.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
      
         // #swagger.tags = ['Product']
         /* #swagger.parameters['body'] = {
@@ -64,7 +64,7 @@ ProductRoute.post('/',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req
     res.send(response)
 }
 );
-ProductRoute.put('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
+ProductRoute.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -88,7 +88,7 @@ ProductRoute.put('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (r
     }
     res.status(200).send(response)
 });
-ProductRoute.delete('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
+ProductRoute.delete('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     const response = await ProductService.handleDeleteProduct(req)
     if (!response) {
@@ -96,7 +96,7 @@ ProductRoute.delete('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async
     }
     res.status(200).send(response)
 });
-ProductRoute.post('/upload/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
+ProductRoute.post('/upload/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     /*
         #swagger.consumes = ['multipart/form-data']  

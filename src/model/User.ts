@@ -5,10 +5,10 @@ export enum UserRole {
     COLLAB = 'collab',
 }
 export default interface User {
-    _id: Types.ObjectId
+    _id?: Types.ObjectId
     profilePic?: string
-    username: string
-    password: string
+    username?: string
+    password?: string
     role?: UserRole[]
     isActive?: boolean
 }

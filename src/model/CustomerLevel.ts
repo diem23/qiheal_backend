@@ -3,7 +3,8 @@ export default interface CustomerLevel{
     _id: Types.ObjectId
     code: string
     discountPercent: number
-    threshodld?: number
+    threshold?: number
+    isActive?: boolean
 
 }
 
@@ -12,7 +13,8 @@ export const COLLECTION_NAME = 'CustomerLevels'
 const schema = new Schema<CustomerLevel>({
     code: {type: Schema.Types.String, required: true},
     discountPercent: {type: Schema.Types.Number, required: true},
-    threshodld: {type: Schema.Types.Number, required: true},
+    threshold: {type: Schema.Types.Number, required: true},
+    isActive: {type: Schema.Types.Boolean, required: true, default: true}
 }, {
     timestamps: true,
 })
