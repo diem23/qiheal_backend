@@ -6,7 +6,7 @@ const create = async (customer: Customer) => {
     return newCustomer;
 }
 const findById = async (id: Types.ObjectId) => {
-    const customer = await CustomerModel.findById(id).populate("user").populate("levelId");
+    const customer = await CustomerModel.findById(id).populate("user").populate("levelId").populate("cartId");
     return customer;
 }
 const findByUserId = async (userId: Types.ObjectId) => {

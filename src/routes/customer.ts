@@ -66,3 +66,27 @@ CustomerRouter.put("/:id", async (req, res) => {
         });
     }
 });
+CustomerRouter.delete("/:id", async (req, res) => {
+    try{
+        if (Types.ObjectId.isValid(req.params.id) === false) {
+            return res.status(400).json({
+                message: "Invalid customer ID",
+            });
+        }
+        const customerId = new Types.ObjectId(req.params.id);
+        const response = await CustomerService.handleDeleteCustomer(customerId);
+        if (response) {
+            return res.status(200).json({
+                message: "Customer deleted successfully",
+            });
+        }
+        return res.status(400).json({
+            message: "Customer deletion failed",
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : String(error),
+        });
+    }
+});

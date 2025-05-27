@@ -2,11 +2,11 @@ import { Types } from "mongoose";
 import Cart, { CartModel } from "../model/Cart";
 import { CustomerLevelModel } from "../model/CustomerLevel";
 const getAll = async () => {
-    const carts = await CartModel.find().populate("customer");
+    const carts = await CartModel.find();
     return carts;
 }
 const getById = async (id: Types.ObjectId) => {
-    const cart = await CartModel.findById(id).populate("customer").populate("products.product").exec();
+    const cart = await CartModel.findById(id).populate("products.product").exec();
     return cart;
 }
 const create = async (Cart: Cart) => {
@@ -14,7 +14,7 @@ const create = async (Cart: Cart) => {
     return newCart;
 }
 const update = async (id: Types.ObjectId, Cart: Cart) => {
-    const updatedCart = await CartModel.findByIdAndUpdate(id, Cart, { new: true }).populate("customer").populate("items.product");
+    const updatedCart = await CartModel.findByIdAndUpdate(id, Cart, { new: true }).populate("items.product");
     return updatedCart;
 }
 const del = async (id: Types.ObjectId) => {
@@ -22,7 +22,7 @@ const del = async (id: Types.ObjectId) => {
     return deletedCart;
 }
 const getByCustomerId = async (customerId: Types.ObjectId) => {
-    const cart = await CartModel.findOne({ customer: customerId }).populate("customer").populate("items.product");
+    const cart = await CartModel.findOne({ customer: customerId }).populate("items.product");
     return cart;
 }
 

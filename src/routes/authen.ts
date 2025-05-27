@@ -4,6 +4,7 @@ import express from "express";
 import { CustomerService } from "../services/CustomerService";
 export const AuthenRouter = express.Router();
 AuthenRouter.post("/signup/customer", async (req, res) => {
+    // #swagger.tags = ['Authen']
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Customer login',

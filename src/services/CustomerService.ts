@@ -17,15 +17,15 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     //         throw new Error("No customer levels available");
     //     }
     // }
+    console.log("User Data:", userData);
     const user = await UserService.handleCreateUser(userData);
+
     if (!user) {
         throw new Error("User creation failed");
     }
     
     customerData.user = user._id; // Assuming user._id is the ID of the created user
-    const newCustomer = await handleCreateCustomer(customerData);
     const cart: Cart = {
-        customer: newCustomer._id, // Assuming user._id is the ID of the created user
         products: [],
         totalPrice: 0,
     };
@@ -33,6 +33,10 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     if (!newCart) { 
         throw new Error("Cart creation failed");
     }
+    customerData.cartId = newCart._id; // Assuming newCart._id is the ID of the created cart
+    const newCustomer = await handleCreateCustomer(customerData);
+    
+    
     return newCustomer;
 }
 const handleCreateCustomer = async (customerData: Customer) => {
@@ -68,6 +72,11 @@ const handleUpdateCustomer = async (customerId: Types.ObjectId, customerData: an
     return updatedCustomer;
 }
 const handleDeleteCustomer = async (customerId: Types.ObjectId) => {
+    const customer = await CustomerRepo.findById(customerId);
+    if (!customer) {
+        throw new Error("Customer not found");
+    }
+    if (customer.cartId) CartService.handleDeleteCart(customer.cartId); // Assuming the cart ID is the same as customer ID
     const deletedCustomer = await CustomerRepo.del(customerId);
     if (!deletedCustomer) {
         throw new Error("Customer deletion failed");

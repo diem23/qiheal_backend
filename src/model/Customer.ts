@@ -7,6 +7,7 @@ export default interface Customer {
     user?: Types.ObjectId
     loyalPoints?: number
     levelId?: Types.ObjectId
+    cartId?: Types.ObjectId
     isActive?: boolean
 }
 export const DOCUMENT_NAME = 'Customers'
@@ -17,6 +18,7 @@ const schema = new Schema<Customer>({
     user: {type: Schema.Types.ObjectId, ref: "Users"},
     loyalPoints: {type: Schema.Types.Number, required: true, default: 0},
     levelId: {type: Schema.Types.ObjectId, ref: "CustomerLevels"},
+    cartId: {type: Schema.Types.ObjectId, ref: "Carts"},
     isActive: {type: Schema.Types.Boolean, required: true, default: true}
 }, {
     timestamps: true,
