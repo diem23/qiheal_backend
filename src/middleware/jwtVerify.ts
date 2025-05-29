@@ -12,7 +12,7 @@ const jwtVerify = (req: any, res: any,next: any) => {
     verify(token,secret, (err: any, user: any) => {
         if (err) return res.sendStatus(403);
         req.user = user;
-        console.log("JWT Verify Middleware: ", req.user);
+        //console.log("JWT Verify Middleware: ", req.user);
         next();
     });
 }
