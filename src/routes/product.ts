@@ -2,44 +2,9 @@ import express from 'express';
 import ProductService from '../services/ProductService';
 import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
-export const ProductRoute=express.Router()
-ProductRoute.post('/search',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
-    // #swagger.tags = ['Product']
-    /* #swagger.parameters['body'] = {
-            in: 'body',
-            description: 'Add a user',
-            schema: { 
-                $keyword: "Office Chair",
-                $page: 1,
-                $limit: 10
-            }
-        } 
-        */
-    const response = await ProductService.handleSearch(req)
-    res.status(200).json({
-        message: 'Get all products successfully',
-        count: response?.length,
-        data: response,
-    });
-});
-ProductRoute.get('/',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async(req,  res) => {
-    
-    const response = await ProductService.handleGetProducts(req)
-    res.status(200).json({
-        message: 'Get all products successfully',
-        count: response?.length,
-        data: response,
-    });
-});
-ProductRoute.get('/:id',verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
-    // #swagger.tags = ['Product']
-    const reponse = await ProductService.handleGetProductById(req)
-    if (!reponse) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-    res.status(200).send(reponse)
-});
-ProductRoute.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
+export const ProductRouter=express.Router()
+
+ProductRouter.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
      
         // #swagger.tags = ['Product']
         /* #swagger.parameters['body'] = {
@@ -64,7 +29,7 @@ ProductRoute.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
     res.send(response)
 }
 );
-ProductRoute.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
+ProductRouter.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -88,7 +53,7 @@ ProductRoute.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     }
     res.status(200).send(response)
 });
-ProductRoute.delete('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
+ProductRouter.delete('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     const response = await ProductService.handleDeleteProduct(req)
     if (!response) {
@@ -96,7 +61,7 @@ ProductRoute.delete('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     }
     res.status(200).send(response)
 });
-ProductRoute.post('/upload/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
+ProductRouter.post('/upload/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     /*
         #swagger.consumes = ['multipart/form-data']  
