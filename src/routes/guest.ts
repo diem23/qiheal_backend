@@ -2,6 +2,7 @@ import express from 'express';
 import verifyRoles from '../middleware/verifyRoles';
 import PostService from '../services/PostService';
 import ProductService from '../services/ProductService';
+import { OrderService } from '../services/OrderService';
 export const GuestRouter = express.Router();
 GuestRouter.post("/post/search", async (req, res) => {
     /* #swagger.parameters['body'] = {
@@ -71,4 +72,39 @@ GuestRouter.get('/product/:id', async (req, res) => {
         return res.status(404).json({ message: 'Product not found' });
     }
     res.status(200).send(reponse)
+});
+GuestRouter.post('/order',async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Create a new order',
+            schema: { 
+                $customer: "645b1f2e8f1b2c001c8e4d3a",
+                $products: [
+                    { product: "645b1f2e8f1b2c001c8e4d3b", quantity: 2 },
+                    { product: "645b1f2e8f1b2c001c8e4d3c", quantity: 1 }
+                ],
+                $usedLoyalPoints: 100,
+                $collaboratorId: "645b1f2e8f1b2c001c8e4d3d",
+                $totalPrice: 250.00,
+                $phone: "1234567890",
+                $province: "Hanoi",
+                $district: "Hoan Kiem",
+                $ward: "Cua Dong",
+                $address: "123 Main St",
+                $note: "Please deliver quickly",
+            }
+        } 
+        */
+    try {
+    const response = await OrderService.handleCreateOrder(req.body);
+    res.status(201).json({
+        message: 'Order created successfully',
+        data: response,
+    });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error creating order',
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
 });

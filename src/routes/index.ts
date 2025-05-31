@@ -10,6 +10,8 @@ import { CustomerLevelRouter } from './customerLevel';
 import { GuestRouter } from './guest';
 import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
+import { OrderRouter } from './order';
+import { OrderStatusRouter } from './orderStatus';
 const router = express.Router();
 router.use('/authen', AuthenRouter
     // #swagger.tags = ['Authen']
@@ -53,6 +55,17 @@ router.use('/customerLevels', jwtVerify, verifyRoles(UserRole.ADMIN), CustomerLe
             "apiKeyAuth": []
     }] */
 );
-
+router.use('/orders', jwtVerify, verifyRoles(UserRole.ADMIN), OrderRouter
+    // #swagger.tags = ['Order']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
+);
+router.use('/orderStatuses', jwtVerify, verifyRoles(UserRole.ADMIN), OrderStatusRouter
+    // #swagger.tags = ['OrderStatus']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
+);
 export default router;
 
