@@ -59,10 +59,25 @@ const handleDeleteCustomerLevel = async (customerLevelId: Types.ObjectId) => {
     }
     return deletedCustomerLevel;
 }
+const handleGetByThreshold = async (threshold: number) => {
+    // This function will retrieve customer levels by a specific threshold
+    const customerLevels = await CustomerLevelRepo.getAll();
+    if (!customerLevels || customerLevels.length === 0) {
+        throw new Error("No customer levels found");
+    }
+    if (customerLevels[customerLevels.length - 1].threshold){
+        if (threshold > (customerLevels[customerLevels.length - 1].threshold as number)) {
+            return customerLevels[customerLevels.length - 1];
+        }
+    }
+    const customerLevel = customerLevels.find(level => level.threshold && level.threshold <= threshold);
+    return customerLevel;
+}
 export const CustomerLevelService = {
     handleCreateCustomerLevel,
     handleGetCustomerLevels,
     handleGetCustomerLevelById,
     handleUpdateCustomerLevel,
-    handleDeleteCustomerLevel
+    handleDeleteCustomerLevel,
+    handleGetByThreshold
 };

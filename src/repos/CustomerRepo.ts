@@ -25,7 +25,12 @@ const getAll = async () => {
     const customers = await CustomerModel.find().populate("user").populate("levelId");
     return customers;
 }
+const getByPhone = async (phone: string) => {
+    const customer = await CustomerModel.findOne({ phone }).populate("user").populate("levelId");
+    return customer;
+}
 export const  CustomerRepo = {
+    getByPhone,
     create,
     findById,
     findByUserId,
