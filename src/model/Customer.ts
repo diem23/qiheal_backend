@@ -1,12 +1,14 @@
 import {model, Schema, Types} from "mongoose"
+import CustomerLevel from "./CustomerLevel"
 
 export default interface Customer {
     _id?: Types.ObjectId
     phone?: string
     email?: string
     user?: Types.ObjectId
-    loyalPoints?: number
-    levelId?: Types.ObjectId
+    usedLoyalPoints?: number
+    currentLoyalPoints?: number
+    levelId?: Types.ObjectId | CustomerLevel
     cartId?: Types.ObjectId
     isActive?: boolean
 }
@@ -16,7 +18,8 @@ const schema = new Schema<Customer>({
     phone: {type: Schema.Types.String, required: true},
     email: {type: Schema.Types.String, required: false},
     user: {type: Schema.Types.ObjectId, ref: "Users"},
-    loyalPoints: {type: Schema.Types.Number, required: true, default: 0},
+    usedLoyalPoints: {type: Schema.Types.Number, required: true, default: 0},
+    currentLoyalPoints: {type: Schema.Types.Number, required: true, default: 0},
     levelId: {type: Schema.Types.ObjectId, ref: "CustomerLevels"},
     cartId: {type: Schema.Types.ObjectId, ref: "Carts"},
     isActive: {type: Schema.Types.Boolean, required: true, default: true}

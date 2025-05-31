@@ -2,9 +2,7 @@ import { Types } from "mongoose";
 import Cart from "../model/Cart";
 import Customer from "../model/Customer";
 import User from "../model/User";
-import { CustomerLevelRepo } from "../repos/CustomerLevelRepo";
 import { CustomerRepo } from "../repos/CustomerRepo";
-import UserRepo from "../repos/UserRepo";
 import { CartService } from "./CartService";
 import UserService from "./UserService";
 
@@ -83,7 +81,16 @@ const handleDeleteCustomer = async (customerId: Types.ObjectId) => {
     }
     return deletedCustomer;
 }
+const handleGetByPhone = async (phone: string) => {
+    const customer = await CustomerRepo.getByPhone(phone);
+    if (!customer) {
+        throw new Error("Customer not found");
+    }
+    return customer;
+}
+
 export const CustomerService = {
+    handleGetByPhone,
     handleCustomerSignUp,
     handleCreateCustomer,
     handleGetCustomers,
