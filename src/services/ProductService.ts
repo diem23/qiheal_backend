@@ -1,5 +1,6 @@
 import { Types } from "mongoose"
 import ProductRepo from "../repos/ProductRepo"
+import Product from "../model/Product";
 const handleSearch = async (req: any) => {
     const keyword = req.body.keyword;
     const page = parseInt(req.body.page) || 1
@@ -50,10 +51,13 @@ const handleCreateProduct = async (req: any) => {
     const newProduct = await ProductRepo.create(req.body)
     return newProduct
 }   
-const handleUpdateProduct = async (req: any) => {
-    const productId = Types.ObjectId.createFromHexString(req.params.id)
+const handleUpdateProduct = async (product: Product) => {
+    if (Types.ObjectId.isValid(product._id) === false) {
+        throw new Error('Invalid Product ID');
+    }
+    const productId = product._id as Types.ObjectId
    // console.log("productId: ", productId);
-    const updatedProduct = await ProductRepo.update(productId, req.body)
+    const updatedProduct = await ProductRepo.update(productId, product)
     return updatedProduct
 }
 const handleDeleteProduct = async (req: any) => {
