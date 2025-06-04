@@ -4,6 +4,7 @@ import PostService from '../services/PostService';
 import ProductService from '../services/ProductService';
 import { OrderService } from '../services/OrderService';
 export const GuestRouter = express.Router();
+// Search posts
 GuestRouter.post("/post/search", async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -22,6 +23,7 @@ GuestRouter.post("/post/search", async (req, res) => {
         data: response,
     });
 });
+// Get all posts
 GuestRouter.get("/post/", async (req, res) => {
     const response = await PostService.handleGetPosts(req)
     res.status(200).json({
@@ -30,6 +32,7 @@ GuestRouter.get("/post/", async (req, res) => {
         data: response,
     });
 });
+// Get post by ID
 GuestRouter.get("/post/:id", async (req, res) => {
     const reponse = await PostService.handleGetPostById(req)
     if
@@ -40,6 +43,7 @@ GuestRouter.get("/post/:id", async (req, res) => {
     res.status(200).send(reponse)
 }
 );
+// Search products
 GuestRouter.post('/product/search', async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -58,6 +62,7 @@ GuestRouter.post('/product/search', async (req, res) => {
         data: response,
     });
 });
+// Get all products
 GuestRouter.get('/product/', async(req,  res) => {
     const response = await ProductService.handleGetProducts(req)
     res.status(200).json({
@@ -66,6 +71,7 @@ GuestRouter.get('/product/', async(req,  res) => {
         data: response,
     });
 });
+// Get product by ID
 GuestRouter.get('/product/:id', async (req, res) => {
     const reponse = await ProductService.handleGetProductById(req)
     if (!reponse) {
@@ -73,6 +79,7 @@ GuestRouter.get('/product/:id', async (req, res) => {
     }
     res.status(200).send(reponse)
 });
+// Create a new order
 GuestRouter.post('/order',async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
@@ -104,6 +111,29 @@ GuestRouter.post('/order',async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: 'Error creating order',
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
+// Get products by list of IDs
+GuestRouter.post('/product/list', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Get products by list of IDs',
+            schema: { 
+                $productIds: ["645b1f2e8f1b2c001c8e4d3b", "645b1f2e8f1b2c001c8e4d3c"]
+            }
+        } 
+        */
+    try {
+        const response = await ProductService.handleGetProductsByListOfIds(req.body.productIds);
+        res.status(200).json({
+            message: 'Get products by list of IDs successfully',
+            data: response,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting products by list of IDs',
             error: error instanceof Error ? error.message : String(error),
         });
     }
