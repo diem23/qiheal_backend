@@ -6,7 +6,7 @@ export default interface Product{
     price?: number;
     stockQty?: number;
     warningLevel?: number;
-    categoryId: Types.ObjectId;
+    categoryId?: Types.ObjectId;
     slug?: string;
     actualPrice?: number;
     images?: string[];
