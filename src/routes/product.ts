@@ -100,8 +100,8 @@ ProductRouter.post("/upload1/:id", upload.array("multFiles", 2), async (req, res
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ message: 'No files uploaded' });
     }
-    req.files = req.files as any[]; // Type assertion to ensure req.files is treated as an array
-    const fileNameArray = req.files.map(file => file.filename);
+    req.files = req.files as Express.Multer.File[]; // Type assertion to ensure req.files is treated as an array
+    const fileNameArray = req.files?.map(file => file.filename);
     const product = {
         _id: Types.ObjectId.createFromHexString(req.params.id),
         images: fileNameArray
