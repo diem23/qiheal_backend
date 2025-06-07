@@ -5,7 +5,7 @@ import OrderStatus from "./OrderStatus"
 
 export default interface Order {
     _id?: Types.ObjectId
-    customer: Types.ObjectId | Customer
+    customer?: Types.ObjectId | Customer
     products: {
         product: Types.ObjectId | Product
         quantity: number
@@ -25,7 +25,7 @@ export default interface Order {
 export const DOCUMENT_NAME = 'Orders'
 export const COLLECTION_NAME = 'Orders'
 const schema = new Schema<Order>({
-    customer: {type: Schema.Types.ObjectId, ref: "Customers", required: true},
+    customer: {type: Schema.Types.ObjectId, ref: "Customers", required: false},
     products: [{
         product: {type: Schema.Types.ObjectId, ref: "Products", required: true},
         quantity: {type: Schema.Types.Number, required: true, default: 1}
