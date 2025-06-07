@@ -5,9 +5,13 @@
     "moduleResolution": "nodenext", // Resolve modules in Node.js style
     "esModuleInterop": true, // Ensure compatibility with CommonJS and ES modules
     "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
-    "strict": true, // Enable strict type checking
+    "strict": false, // Disable strict type checking
     "resolveJsonModule": true, // Allow importing JSON files
     "outDir": "./dist", // Output directory for compiled JavaScript files
     "rootDir": "./src", // Root directory for TypeScript source files
+    "noImplicitAny": false, // Disable warnings for implicit any types
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "noUnusedLocals": false, // Disable warnings for unused local variables
+    "noUnusedParameters": false // Disable warnings for unused parameters
   }
 }

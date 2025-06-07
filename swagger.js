@@ -11,8 +11,8 @@ const doc = {
       url: '/api', // The base path for your API
     },
   ],
-  schemes:['https'], // Use 'http' or 'https' based on your API
-  host: 'qiheal-backend.onrender.com', // The host of your API
+  schemes:['http'], // Use 'http' or 'https' based on your API
+  host: 'localhost:4000', // The host of your API
   tags:[
     {
         name: 'User',
@@ -25,6 +25,10 @@ const doc = {
     {
         name: 'Order',
         description: 'Order related endpoints',
+    },
+    {
+        name: 'Upload',
+        description: 'File upload endpoints for different entity types',
     },
   ],
 //   components: {
@@ -53,6 +57,6 @@ securityDefinitions: {
 };
 
 const outputFile = './swagger_output.json'; // The generated Swagger JSON file
-const endpointsFiles = ['./src/app.ts']; // The entry point of your application
+const endpointsFiles = ['./src/app.ts', './src/routes/upload.ts']; // Include the upload routes file
 
 swaggerAutogen(outputFile, endpointsFiles, doc);
