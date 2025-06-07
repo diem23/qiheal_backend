@@ -53,7 +53,7 @@ const handleCreateOrder = async (orderData: Order ) => {
             await CustomerService.handleUpdateCustomer(customer._id as Types.ObjectId, customer); // Update customer with new loyalty points
         }
     }
-    
+    orderData.customer = customer?._id; // Ensure customer is of type ObjectId
     const firstStatus = await OrderStatusRepo.getFirstStatus(); // Get the first status for the order
     if (!firstStatus) {
         throw new Error("First order status not found");
