@@ -13,7 +13,7 @@ const doc = {
   },
   servers: [
     {
-      url: '/api', // The base path for your API
+      url: '', // The base path for your API
     },
   ],
   schemes:['http'], // Sử dụng http cho local
