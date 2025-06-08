@@ -12,6 +12,10 @@ import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
 import { OrderRouter } from './order';
 import { OrderStatusRouter } from './orderStatus';
+import { UploadRouter } from './upload';
+import upload from '../services/upload.service';
+import { uploadImage } from './upload.controller';
+
 const router = express.Router();
 router.use('/authen', AuthenRouter
     // #swagger.tags = ['Authen']
@@ -19,6 +23,30 @@ router.use('/authen', AuthenRouter
 router.use('/guest', GuestRouter
     // #swagger.tags = ['Guest']
 );
+
+// Public upload route không cần xác thực (chỉ để test)
+/**
+ * @swagger
+ * /api/public-upload:
+ *   post:
+ *     tags: [Upload]
+ *     description: Endpoint công khai để test upload một hình ảnh (không cần xác thực)
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         required: true
+ *         description: File hình ảnh cần upload
+ *     responses:
+ *       200:
+ *         description: Upload thành công
+ *         schema:
+ *           $ref: '#/definitions/UploadResponse'
+ */
+router.post('/public-upload', upload.single('image'), uploadImage);
+
 router.use('/products', jwtVerify,verifyRoles(UserRole.ADMIN), ProductRouter
     // #swagger.tags = ['Product']
     /* #swagger.security = [{
@@ -63,6 +91,12 @@ router.use('/orders', jwtVerify, verifyRoles(UserRole.ADMIN), OrderRouter
 );
 router.use('/orderStatuses', jwtVerify, verifyRoles(UserRole.ADMIN), OrderStatusRouter
     // #swagger.tags = ['OrderStatus']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
+);
+router.use('/upload', jwtVerify, verifyRoles(UserRole.ADMIN), UploadRouter
+    // #swagger.tags = ['Upload']
     /* #swagger.security = [{
             "apiKeyAuth": []
     }] */
