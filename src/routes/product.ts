@@ -2,8 +2,9 @@ import express from 'express';
 import ProductService from '../services/ProductService';
 import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
-import { upload } from '../services/UploadService';
+
 import { Types } from 'mongoose';
+import upload from '../services/UploadService';
 export const ProductRouter=express.Router()
 
 ProductRouter.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
