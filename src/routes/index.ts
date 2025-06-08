@@ -12,6 +12,9 @@ import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
 import { OrderRouter } from './order';
 import { OrderStatusRouter } from './orderStatus';
+import { UploadRouter } from './upload';
+
+
 const router = express.Router();
 router.use('/authen', AuthenRouter
     // #swagger.tags = ['Authen']
@@ -19,6 +22,9 @@ router.use('/authen', AuthenRouter
 router.use('/guest', GuestRouter
     // #swagger.tags = ['Guest']
 );
+
+
+
 router.use('/products', jwtVerify,verifyRoles(UserRole.ADMIN), ProductRouter
     // #swagger.tags = ['Product']
     /* #swagger.security = [{
@@ -66,6 +72,10 @@ router.use('/orderStatuses', jwtVerify, verifyRoles(UserRole.ADMIN), OrderStatus
     /* #swagger.security = [{
             "apiKeyAuth": []
     }] */
+);
+router.use('/upload', UploadRouter
+    // #swagger.tags = ['Upload']
+    
 );
 export default router;
 

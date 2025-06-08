@@ -14,7 +14,7 @@ const handleSignup = async (req: any) => {
     return user;
 }
 const handleLogin = async (userInfo: any)=>{
-    
+    console.log("userInfo: ", userInfo.username);
     const user = await UserRepo.findByUsername(userInfo.username);
     if (!user) throw new Error("User not found!!!")
     if (!user.password) throw new Error("Password is not set!!!")
