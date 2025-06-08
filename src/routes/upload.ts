@@ -1,48 +1,21 @@
 import express from 'express';
-import { uploadImage } from './upload.controller';
-import upload from '../services/upload.service';
+import upload from '../services/UploadService';
+
 
 const UploadRouter = express.Router();
 
-// Route upload một hình ảnh
-UploadRouter.post('/image', upload.single('image'), uploadImage);
-/* 
-    #swagger.tags = ['Upload']
-    #swagger.description = 'Endpoint để upload một hình ảnh'
-    #swagger.consumes = ['multipart/form-data']
-    #swagger.parameters['image'] = {
-        in: 'formData',
-        type: 'file',
-        required: true,
-        description: 'File hình ảnh cần upload'
-    }
-    #swagger.security = [{
-        "apiKeyAuth": []
-    }]
-    #swagger.responses[200] = {
-        description: 'Upload thành công',
-        schema: { $ref: '#/definitions/UploadResponse' }
-    }
-    #swagger.responses[400] = {
-        description: 'Không có file nào được upload',
-        schema: { 
-            success: false, 
-            message: 'Không có file nào được upload',
-            error: 'No file uploaded'
-        }
-    }
-    #swagger.responses[500] = {
-        description: 'Lỗi server',
-        schema: { 
-            success: false, 
-            message: 'Lỗi khi upload file',
-            error: 'Error message'
-        }
-    }
-*/
-
 // Route upload nhiều hình ảnh (tối đa 5 ảnh)
 UploadRouter.post('/images', upload.array('images', 5), (req, res) => {
+    /*
+        #swagger.consumes = ['multipart/form-data']  
+        #swagger.parameters['images'] = {
+            in: 'formData',
+            type: 'array',
+            required: true,
+            description: 'Tối đa 5 hình ảnh để upload',
+            collectionFormat: 'multi',
+            items: { type: 'file' }
+        } */
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
@@ -78,40 +51,6 @@ UploadRouter.post('/images', upload.array('images', 5), (req, res) => {
         });
     }
 });
-/* 
-    #swagger.tags = ['Upload']
-    #swagger.description = 'Endpoint để upload nhiều hình ảnh (tối đa 5 ảnh)'
-    #swagger.consumes = ['multipart/form-data']
-    #swagger.parameters['images'] = {
-        in: 'formData',
-        type: 'file',
-        required: true,
-        description: 'Các file hình ảnh cần upload (tối đa 5 file)',
-        collectionFormat: 'multi'
-    }
-    #swagger.security = [{
-        "apiKeyAuth": []
-    }]
-    #swagger.responses[200] = {
-        description: 'Upload thành công',
-        schema: { $ref: '#/definitions/MultiUploadResponse' }
-    }
-    #swagger.responses[400] = {
-        description: 'Không có file nào được upload',
-        schema: { 
-            success: false, 
-            message: 'Không có file nào được upload',
-            error: 'No files uploaded'
-        }
-    }
-    #swagger.responses[500] = {
-        description: 'Lỗi server',
-        schema: { 
-            success: false, 
-            message: 'Lỗi khi upload file',
-            error: 'Error message'
-        }
-    }
-*/
+
 
 export { UploadRouter }; 

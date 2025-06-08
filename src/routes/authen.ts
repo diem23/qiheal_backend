@@ -82,6 +82,7 @@ AuthenRouter.post('/login', async (req, res)=>{
         }
         */
     try{
+        //console.log("req.body: ", req.body);
         const response = await AuthenService.handleLogin(req.body);
         if (response) {
             return res.status(200).json({
