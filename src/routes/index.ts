@@ -75,6 +75,9 @@ router.use('/orderStatuses', jwtVerify, verifyRoles(UserRole.ADMIN), OrderStatus
 );
 router.use('/upload', jwtVerify, verifyRoles(UserRole.ADMIN), UploadRouter
     // #swagger.tags = ['Upload']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
     
 );
 export default router;
