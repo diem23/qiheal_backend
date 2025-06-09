@@ -6,6 +6,7 @@ import cors from "cors"
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import removeNullValue from "./middleware/removeNullValue";
 dotenv.config();
 const mongoURL = process.env.DEPLOYMENT_DB_URL || "";
 const app = express();
@@ -42,7 +43,7 @@ const swaggerFile = require('../swagger_output.json');
 app.use(express.json({ limit: '10mb' }));
 app.use(cors({origin:'*', optionsSuccessStatus: 200}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-app.use('/api' , router);
+app.use('/api' ,removeNullValue, router);
 app.listen(port as number,'0.0.0.0');
 
 export default app;
