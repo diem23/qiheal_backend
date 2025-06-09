@@ -26,10 +26,18 @@ ProductRouter.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
             }
         } 
         */
-       
+    try{
         console.log("req.body: ", req.body);
-    const response = await ProductService.handleCreateProduct(req)
-    res.send(response)
+        const response = await ProductService.handleCreateProduct(req.body)
+        res.send(response)
+    } catch (error) {
+        console.error("create product error:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+
 }
 );
 ProductRouter.put('/',verifyRoles(UserRole.ADMIN), async (req, res) => {

@@ -44,11 +44,11 @@ const handleGetProductById = async (req: any) => {
     //console.log(product);
     return product
 }
-const handleCreateProduct = async (req: any) => {
+const handleCreateProduct = async (product: Product) => {
    
     //console.log("filesBase64: ", filesBase64);
-    console.log("req.body: ", req.body?.body);
-    const newProduct = await ProductRepo.create(req.body)
+    console.log("product: ", product);
+    const newProduct = await ProductRepo.create(product)
     return newProduct
 }   
 const handleUpdateProduct = async (product: Product) => {
