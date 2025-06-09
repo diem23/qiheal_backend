@@ -10,6 +10,7 @@ AuthenRouter.post("/signup/customer", async (req, res) => {
             schema: { 
                 $username: "john_doe",
                 $password: "password123",
+                $fullname: "John Doe",
                 $phone: "1234567890",
                 $email: "ddd@gmail.com",
                 $levelId: "645b1f2e8f1b2c001c8e4d3a"
