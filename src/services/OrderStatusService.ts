@@ -30,6 +30,14 @@ const handleGetOrderStatusById = async (id: Types.ObjectId) => {
     }
     return orderStatus;
 }
+const handleGetfirstStatus = async () => { 
+    // This function will retrieve the first order status in the workflow
+    const firstStatus = await OrderStatusRepo.getFirstStatus();
+    if (!firstStatus) {
+        throw new Error("First order status not found");
+    }
+    return firstStatus;
+}
 const handleUpdateOrderStatus = async (id: Types.ObjectId, orderStatus: OrderStatus) => {
     // This function will update an existing order status by its ID
     if (!orderStatus.status) {
@@ -50,6 +58,7 @@ const handleDeleteOrderStatus = async (id: Types.ObjectId) => {
     return deletedOrderStatus;
 }
 export const OrderStatusService = {
+    handleGetfirstStatus,
     handleCreateOrderStatus,
     handleGetOrderStatuses,
     handleGetOrderStatusById,
