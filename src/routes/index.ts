@@ -13,6 +13,7 @@ import { UserRole } from '../model/User';
 import { OrderRouter } from './order';
 import { OrderStatusRouter } from './orderStatus';
 import { UploadRouter } from './upload';
+import { ContactRouter } from './contact';
 
 
 const router = express.Router();
@@ -76,9 +77,14 @@ router.use('/orderStatuses', jwtVerify, verifyRoles(UserRole.ADMIN), OrderStatus
 router.use('/upload', jwtVerify, verifyRoles(UserRole.ADMIN), UploadRouter
     // #swagger.tags = ['Upload']
     /* #swagger.security = [{
+            "apSiKeyAuth": []
+    }] */
+);
+router.use('/contact', jwtVerify, verifyRoles(UserRole.ADMIN), ContactRouter
+    // #swagger.tags = ['Contact']
+    /* #swagger.security = [{
             "apiKeyAuth": []
     }] */
-    
 );
 export default router;
 
