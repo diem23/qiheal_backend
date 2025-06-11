@@ -11,9 +11,21 @@ const doc = {
       url: '/api', // The base path for your API
     },
   ],
-  schemes:['https'], // Use 'http' or 'https' based on your API
-  host: 'qiheal-backend.onrender.com', // The host of your API
+  //schemes:['https'], // Use 'http' or 'https' based on your API
+  //host: 'qiheal-backend.onrender.com', // The host of your API
   tags:[
+    {
+        name: 'Authen',
+        description: 'Authen related endpoints',
+    },
+    {
+        name: 'Guest',
+        description: 'Guest related endpoints',
+    },
+    {
+        name: 'Post',
+        description: 'Post related endpoints',
+    },
     {
         name: 'User',
         description: 'User related endpoints',
@@ -26,6 +38,30 @@ const doc = {
         name: 'Order',
         description: 'Order related endpoints',
     },
+    {
+        name: 'Customer',
+        description: 'Customer related endpoints',
+    },
+    {
+        name: 'CustomerLevel',
+        description: 'CustomerLevel related endpoints',
+    },
+    {
+        name: 'OrderStatus',
+        description: 'OrderStatus related endpoints',
+    },
+    {
+        name: 'Upload',
+        description: 'Upload related endpoints',
+    },
+    {
+        name: 'Cart',
+        description: 'Cart related endpoints',
+    },
+    {
+        name: 'Contact',
+        description: 'Contact related endpoints',
+    }
   ],
 //   components: {
 //     securitySchemes: {

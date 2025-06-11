@@ -9,6 +9,7 @@ const search = async (keyword: string, page: number, limit: number): Promise<Pro
             { desc: { $regex: keyword, $options: "i" } }
         ]
     })
+        .sort({ createdAt: -1 }) // Sort by createdAt in descending order
         .skip((page - 1) * limit)
         .limit(limit)
         .lean<Product[]>()
@@ -17,7 +18,9 @@ const search = async (keyword: string, page: number, limit: number): Promise<Pro
     return products
 }
 const getAlls = async ():Promise<Product[] | null> => {
-    const products = await ProductModel.find().lean<Product[]>().exec()
+    // get products ordered by createdAt in descending order
+    const products = await ProductModel.find().sort({ createdAt: -1 }).lean<Product[]>().exec()
+    //const products = await ProductModel.find().lean<Product[]>().exec()
     
     return products
 }

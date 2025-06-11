@@ -1,6 +1,11 @@
 import { Types } from "mongoose"
 import ProductRepo from "../repos/ProductRepo"
 import Product from "../model/Product";
+export enum UpdateType {
+    INCREASE = 'increase',
+    DECREASE = 'decrease',
+    SET = 'set'
+}
 const handleSearch = async (req: any) => {
     const keyword = req.body.keyword;
     const page = parseInt(req.body.page) || 1
@@ -44,11 +49,11 @@ const handleGetProductById = async (req: any) => {
     //console.log(product);
     return product
 }
-const handleCreateProduct = async (req: any) => {
+const handleCreateProduct = async (product: Product) => {
    
     //console.log("filesBase64: ", filesBase64);
-    console.log("req.body: ", req.body?.body);
-    const newProduct = await ProductRepo.create(req.body)
+    console.log("product: ", product);
+    const newProduct = await ProductRepo.create(product)
     return newProduct
 }   
 const handleUpdateProduct = async (product: Product) => {
@@ -59,6 +64,26 @@ const handleUpdateProduct = async (product: Product) => {
    // console.log("productId: ", productId);
     const updatedProduct = await ProductRepo.update(productId, product)
     return updatedProduct
+}
+const handleUpdateProductStock = async (product: Product, quantity: number, updateType: UpdateType = UpdateType.SET) => {
+    if (!product.stockQty) product.stockQty = 0;
+
+    
+    switch (updateType) {
+        case UpdateType.INCREASE:
+            product.stockQty += quantity;
+            break;
+        case UpdateType.DECREASE:
+            product.stockQty -= quantity;
+            break;
+        case UpdateType.SET:
+            product.stockQty = quantity;
+            break;
+        default:
+            throw new Error('Invalid update type');
+    }
+    const updatedProduct = await ProductRepo.update(product._id as Types.ObjectId, product); 
+    return updatedProduct;
 }
 const handleDeleteProduct = async (req: any) => {
     const productId = Types.ObjectId.createFromHexString(req.params.id)
@@ -84,6 +109,7 @@ const addBase64ImagesToProduct = async (req: any) => {
 };
 const ProductService = {
     handleSearch,
+    handleUpdateProductStock,
     handleGetProductsByListOfIds,
     addBase64ImagesToProduct,
     handleGetProducts,

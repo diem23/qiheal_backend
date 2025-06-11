@@ -9,6 +9,8 @@ import { CustomerLevelService } from "./CustomerLevel";
 import OrderStatus, { OrderStatusName } from "../model/OrderStatus";
 import Order from "../model/Order";
 import { OrderStatusRepo } from "../repos/OrderStatus";
+import { OrderStatusService } from "./OrderStatusService";
+import ProductService, { UpdateType } from "./ProductService";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     let order = await OrderRepo.getById(orderId);
     if (!order) {
@@ -31,7 +33,6 @@ const calTotalPrice = async (orderId: Types.ObjectId) => {
 const handleCreateOrder = async (orderData: Order ) => {
     // This function will handle the creation of a new order
     // It should validate the order data and then call the repository to create the order
-    
     let customer: Customer | null = null;
     if (!orderData.phone){
         if (!orderData.customer) {
@@ -43,7 +44,6 @@ const handleCreateOrder = async (orderData: Order ) => {
     console.log("Customer data:", customer);
     // Check to minus current loyalty points of customer
     if (customer){
-        
         if (orderData.usedLoyalPoints && customer.currentLoyalPoints){
             customer.currentLoyalPoints -=   orderData.usedLoyalPoints ; // Update used loyalty points
             if (customer.currentLoyalPoints < 0) {
@@ -53,13 +53,12 @@ const handleCreateOrder = async (orderData: Order ) => {
             await CustomerService.handleUpdateCustomer(customer._id as Types.ObjectId, customer); // Update customer with new loyalty points
         }
     }
-    orderData.customer = customer?._id; // Ensure customer is of type ObjectId
-    const firstStatus = await OrderStatusRepo.getFirstStatus(); // Get the first status for the order
-    if (!firstStatus) {
-        throw new Error("First order status not found");
-    }
+    
+
+    const firstStatus = await OrderStatusService.handleGetfirstStatus(); // Get the first status for the order
     orderData.status = firstStatus._id; // Set the order status to the first status
-    console.log("Order data received for creation:", orderData);
+    
+
     // validate collaborator
     let newOrder = await OrderRepo.create(orderData);
     if (!newOrder) {
@@ -120,8 +119,12 @@ const handleConfirmOrder = async (order: Order) => {
         }
         customer = await CustomerService.handleUpdateCustomer(customerId, order.customer); // Update customer with new loyalty points and level
     }
-    //order.status = OrderStatus.PACKAGING; // Change status to packaging
-    //const updatedOrder = await OrderRepo.update(orderId, order);
+    // XỬ LÝ TRỪ HÀNG TỒN KHO
+    for (const item of order.products) {
+        item.product = item.product as Product; // Ensure item.product is of type Product
+        ProductService.handleUpdateProductStock(item.product, item.quantity, UpdateType.INCREASE); // Decrease stock for each product in the order
+    }
+    
     return customer;
 }
 // This function will cancel an order by its ID
@@ -151,6 +154,7 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
                 customer = await CustomerService.handleUpdateCustomer(order.customer._id as Types.ObjectId, order.customer); // Update customer with refunded loyalty points
             }
         }
+        // XỬ LÝ CỘNG HÀNG TỒN KHO
     }
     const cancelledStatus = await OrderStatusRepo.getStatusByName(OrderStatusName.CANCELLED); // Get the cancelled status
     if (!cancelledStatus) {

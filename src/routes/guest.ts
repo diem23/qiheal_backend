@@ -3,6 +3,7 @@ import verifyRoles from '../middleware/verifyRoles';
 import PostService from '../services/PostService';
 import ProductService from '../services/ProductService';
 import { OrderService } from '../services/OrderService';
+import { ContactService } from '../services/ContactService';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -137,4 +138,31 @@ GuestRouter.post('/product/list', async (req, res) => {
             error: error instanceof Error ? error.message : String(error),
         });
     }
+});
+GuestRouter.post('/contact', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Create a contact',
+            schema: { 
+                $fullname: "Nguyễn Minh Điềm",
+                $phone: "1234567890",
+                $email: "nmdiem23@gmail.com",
+                $address: "123 Main St",
+                $serviceType: "Advise on product",
+                $note: "I need help with a product"
+            }
+        }
+        */
+    try {
+        const response = await ContactService.handleCreateContact(req.body);
+        res.status(201).json({
+            message: 'Contact created successfully',
+            data: response,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error creating contact',
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }   
 });

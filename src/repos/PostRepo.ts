@@ -18,6 +18,7 @@ const search = async (keyword: string, page: number, limit: number): Promise<Pos
             { title: { $regex: '%' + keyword + '%', $options: "i" } },
         ]
     })
+        .sort({ createAt: -1 }) // Sort by createAt in descending order
         .skip((page - 1) * limit)
         .limit(limit)
         .lean<Post[]>()
@@ -25,7 +26,7 @@ const search = async (keyword: string, page: number, limit: number): Promise<Pos
     return posts
 }
 const getAlls = async (): Promise<Post[] | null> => {
-    const posts = await PostModel.find().lean<Post[]>().exec()
+    const posts = await PostModel.find().sort({createdAt: -1}).lean<Post[]>().exec()
     return posts
 }
 const getById = async (id: Types.ObjectId): Promise<Post | null> => {
