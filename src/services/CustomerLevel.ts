@@ -1,6 +1,11 @@
 import { Types } from "mongoose";
 import CustomerLevel from "../model/CustomerLevel";
 import { CustomerLevelRepo } from "../repos/CustomerLevelRepo";
+import { UpdateType } from "../Types/UpdateType.prop";
+import Customer from "../model/Customer";
+import { CustomerService } from "./CustomerService";
+import { SystemSettingsService } from "./SystemSettingsService";
+import { PointConversionValue, SystemSettingName } from "../Types/SystemSettingTypes.props";
 
 const handleCreateCustomerLevel = async (customerLevel: CustomerLevel) => {
     // Here you would typically call your CustomerLevelRepo.create method
@@ -73,7 +78,41 @@ const handleGetByThreshold = async (threshold: number) => {
     const customerLevel = customerLevels.find(level => level.threshold && level.threshold <= threshold);
     return customerLevel;
 }
+const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateType, loyaltyPoints: number = 0, totalPrice: number = 0) => {
+    if (!customer) {
+        throw new Error("Customer not found");
+    }
+
+    const pointSetting = await SystemSettingsService.getSystemSettingByKey(SystemSettingName.POINT_CONVERSION);
+    const customerId = customer._id as Types.ObjectId;
+    pointSetting.value = pointSetting.value as PointConversionValue; // Ensure pointSetting has a value
+    
+    if (!customer.usedLoyalPoints) customer.usedLoyalPoints = 0; // Initialize usedLoyalPoints if not present
+    if (!customer.currentLoyalPoints) customer.currentLoyalPoints = 0; // Initialize currentLoyalPoints if not present
+    
+    const modifyingLoyaltyPoints = (totalPrice > 0) ? Math.floor(totalPrice / (pointSetting.value.moneyPerDiscount as number) * (pointSetting.value.pointConversion as number)) : loyaltyPoints; // Use provided loyalty points or current used points
+    
+    if (updateType === UpdateType.INCREASE) {
+         // Ensure customer ID is of type ObjectId
+        if (totalPrice > 0) customer.usedLoyalPoints += modifyingLoyaltyPoints; // Add used loyalty points to customer
+        customer.currentLoyalPoints += modifyingLoyaltyPoints; // Add current loyalty points to customer
+    }
+    else if (updateType === UpdateType.DECREASE) {
+        if ( customer.usedLoyalPoints < modifyingLoyaltyPoints) {
+            throw new Error("Insufficient loyalty points to decrease");
+        }
+        if (totalPrice > 0) customer.usedLoyalPoints -= modifyingLoyaltyPoints; // Subtract used loyalty points from customer
+        customer.currentLoyalPoints -= modifyingLoyaltyPoints; // Subtract current loyalty points from customer
+    }
+    
+    const newCustomerLevel = await CustomerLevelService.handleGetByThreshold(customer.usedLoyalPoints) // Ensure levelId is of type CustomerLevel
+    if (newCustomerLevel) {
+        customer.levelId = newCustomerLevel; // Update customer level if applicable
+    }
+    customer = await CustomerService.handleUpdateCustomer(customerId, customer); // Update customer with new loyalty points and level
+}
 export const CustomerLevelService = {
+    handleUpdateLoyaltyPoints,
     handleCreateCustomerLevel,
     handleGetCustomerLevels,
     handleGetCustomerLevelById,

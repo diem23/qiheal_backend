@@ -14,6 +14,7 @@ import { OrderRouter } from './order';
 import { OrderStatusRouter } from './orderStatus';
 import { UploadRouter } from './upload';
 import { ContactRouter } from './contact';
+import { SystemSettingRouter } from './systemSetting';
 
 
 const router = express.Router();
@@ -85,6 +86,9 @@ router.use('/contact', jwtVerify, verifyRoles(UserRole.ADMIN), ContactRouter
     /* #swagger.security = [{
             "apiKeyAuth": []
     }] */
+);
+router.use('/systemSettings', SystemSettingRouter
+    // #swagger.tags = ['SystemSetting']
 );
 export default router;
 
