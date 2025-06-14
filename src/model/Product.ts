@@ -8,6 +8,7 @@ export default interface Product{
     warningLevel?: number;
     categoryId?: Types.ObjectId;
     slug?: string;
+    relatedProduct?: Types.ObjectId[];
     actualPrice?: number;
     images?: string[];
     isActive?: boolean
@@ -23,6 +24,7 @@ const schema = new Schema<Product>({
     categoryId: {type: Schema.Types.ObjectId, ref: "Category"},
     images: {type: [Schema.Types.String], required: true},
     slug: {type: Schema.Types.String, required: true},
+    relatedProduct: {type: [Schema.Types.ObjectId], ref: "Products", default: []},
     actualPrice: {type: Schema.Types.Number, required: true, default: 0},
     isActive: {type: Schema.Types.Boolean, required: true, default: true}
 }, {

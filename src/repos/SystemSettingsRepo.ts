@@ -1,7 +1,7 @@
 
 import { Types } from "mongoose";
 import SystemSettings, { SystemSettingsModel } from "../model/SystemSettings";
-import { SystemSetting, SystemSettingName } from "../Types/SystemSettingTypes.props";
+import {  SystemSettingName } from "../Types/SystemSettingTypes.props";
 
 const getAll= async () => {
     // This function will retrieve all system settings
@@ -11,7 +11,7 @@ const getAll= async () => {
     }
     return systemSettings;
 }
-const create = async (systemSetting: SystemSetting) => {
+const create = async (systemSetting: SystemSettings) => {
     // This function will create a new system setting
     const newSystemSetting = await SystemSettingsModel.create(systemSetting)
     if (!newSystemSetting) {

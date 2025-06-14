@@ -85,12 +85,12 @@ const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateT
 
     const pointSetting = await SystemSettingsService.getSystemSettingByKey(SystemSettingName.POINT_CONVERSION);
     const customerId = customer._id as Types.ObjectId;
-    pointSetting.value = pointSetting.value as PointConversionValue; // Ensure pointSetting has a value
+    const point = pointSetting.value as PointConversionValue; // Ensure pointSetting has a value
     
     if (!customer.usedLoyalPoints) customer.usedLoyalPoints = 0; // Initialize usedLoyalPoints if not present
     if (!customer.currentLoyalPoints) customer.currentLoyalPoints = 0; // Initialize currentLoyalPoints if not present
     
-    const modifyingLoyaltyPoints = (totalPrice > 0) ? Math.floor(totalPrice / (pointSetting.value.moneyPerDiscount as number) * (pointSetting.value.pointConversion as number)) : loyaltyPoints; // Use provided loyalty points or current used points
+    const modifyingLoyaltyPoints = (totalPrice > 0) ? Math.floor(totalPrice / (point.moneyPerDiscount as number) * (point.pointsPerDiscount as number)) : loyaltyPoints; // Use provided loyalty points or current used points
     
     if (updateType === UpdateType.INCREASE) {
          // Ensure customer ID is of type ObjectId

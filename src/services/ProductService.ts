@@ -104,6 +104,10 @@ const addBase64ImagesToProduct = async (req: any) => {
 
     return updatedProduct;
 };
+const handleChooseRelatedProducts = async (productId: Types.ObjectId, relatedProductIds: Types.ObjectId[]) => {
+    const product = ProductRepo.chooseRelatedProducts(productId, relatedProductIds)
+    return product;
+}
 const ProductService = {
     handleSearch,
     handleUpdateProductStock,
@@ -113,6 +117,7 @@ const ProductService = {
     handleGetProductById,
     handleCreateProduct,
     handleUpdateProduct,
-    handleDeleteProduct
+    handleDeleteProduct,
+    handleChooseRelatedProducts
 }
 export default ProductService

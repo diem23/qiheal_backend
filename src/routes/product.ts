@@ -120,14 +120,36 @@ ProductRouter.post("/upload1/:id", upload.array("multFiles", 2), async (req, res
         return res.status(404).json({ message: 'Product not found' });
     }
     res.status(200).send(updatedProduct);
-    // const filesArray = Array.isArray(files) ? files : [files];
-    // console.log("Product:", product);
-    // const response = ProductService.handleUpdateProduct(product);
-    // if (!response) {
-    //     return res.status(404).json({ message: 'Product not found' });
-    // }
-    // res.status(200).send(response);
-   
-
 });
+
+ProductRouter.post('/related/', verifyRoles(UserRole.ADMIN), async (req, res) => {
+    // #swagger.tags = ['Product']
+    /*
+        #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Add related products',
+            schema: { 
+                $id: "645b1f2e8f1b2c001c8e4d3a",
+                $relatedProductIds: ["645b1f2e8f1b2c001c8e4d3a", "645b1f2e8f1b2c001c8e4d3b"]
+            }
+        } 
+    */
+    try {
+        if (!Types.ObjectId.isValid(req.body.id)) {
+            return res.status(400).json({ message: 'Invalid Product ID' });
+        }
+        const response = await ProductService.handleChooseRelatedProducts(req.body.id, req.body.relatedProductIds as Types.ObjectId[]);
+        res.status(200).json({
+            message: "Related products updated successfully",
+            data: response,
+        });
+    } catch (error) {
+        console.error("Error updating related products:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
+
 
