@@ -10,7 +10,8 @@ import OrderStatus, { OrderStatusName } from "../model/OrderStatus";
 import Order from "../model/Order";
 import { OrderStatusRepo } from "../repos/OrderStatus";
 import { OrderStatusService } from "./OrderStatusService";
-import ProductService, { UpdateType } from "./ProductService";
+import ProductService from "./ProductService";
+import { UpdateType } from "../Types/UpdateType.prop";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     let order = await OrderRepo.getById(orderId);
     if (!order) {
@@ -44,6 +45,7 @@ const handleCreateOrder = async (orderData: Order ) => {
     console.log("Customer data:", customer);
     // Check to minus current loyalty points of customer
     if (customer){
+        CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
         if (orderData.usedLoyalPoints && customer.currentLoyalPoints){
             customer.currentLoyalPoints -=   orderData.usedLoyalPoints ; // Update used loyalty points
             if (customer.currentLoyalPoints < 0) {
@@ -109,20 +111,21 @@ const handleConfirmOrder = async (order: Order) => {
     // Check to update used loyalty points of customer
     let customer : Customer | null = null;
     order.customer = order.customer as Customer; // Ensure customer is of type Customer
-    if (order.customer.usedLoyalPoints && order.customer.usedLoyalPoints > 0) {
-        const customerId = order.customer._id as Types.ObjectId; // Ensure customer ID is of type ObjectId
-        order.customer.usedLoyalPoints += order.usedLoyalPoints ? order.usedLoyalPoints : 0; // Add used loyalty points to customer
-        // Check if customer level needs to be updated based on new loyalty points
-        const newCustomerLevel = await CustomerLevelService.handleGetByThreshold(order.customer.usedLoyalPoints) // Ensure levelId is of type CustomerLevel
-        if (newCustomerLevel) {
-            order.customer.levelId = newCustomerLevel; // Update customer level if applicable
-        }
-        customer = await CustomerService.handleUpdateCustomer(customerId, order.customer); // Update customer with new loyalty points and level
-    }
+    CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, 0, order.totalPrice ); // Update loyalty points of customer
+    // if (order.customer.usedLoyalPoints && order.customer.usedLoyalPoints > 0) {
+    //     const customerId = order.customer._id as Types.ObjectId; // Ensure customer ID is of type ObjectId
+    //     order.customer.usedLoyalPoints += order.usedLoyalPoints ? order.usedLoyalPoints : 0; // Add used loyalty points to customer
+    //     // Check if customer level needs to be updated based on new loyalty points
+    //     const newCustomerLevel = await CustomerLevelService.handleGetByThreshold(order.customer.usedLoyalPoints) // Ensure levelId is of type CustomerLevel
+    //     if (newCustomerLevel) {
+    //         order.customer.levelId = newCustomerLevel; // Update customer level if applicable
+    //     }
+    //     customer = await CustomerService.handleUpdateCustomer(customerId, order.customer); // Update customer with new loyalty points and level
+    // }
     // XỬ LÝ TRỪ HÀNG TỒN KHO
     for (const item of order.products) {
         item.product = item.product as Product; // Ensure item.product is of type Product
-        ProductService.handleUpdateProductStock(item.product, item.quantity, UpdateType.INCREASE); // Decrease stock for each product in the order
+        ProductService.handleUpdateProductStock(item.product, item.quantity, UpdateType.DECREASE); // Decrease stock for each product in the order
     }
     
     return customer;
@@ -139,22 +142,30 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     if (order.status.status == OrderStatusName.PAID) {
         throw new Error("Cannot cancel a paid order");
     }
+    order.customer = order.customer as Customer; // Ensure customer is of type Customer
+    // refund current loyalty points to customer
+    CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, order.usedLoyalPoints, 0); // Refund loyalty points to customer
     // Case where the order is not pending, we need to refund loyalty points if used
     if (order.status.status !== OrderStatusName.PENDING) {
-        order.customer = order.customer as Customer; // Ensure customer is of type Customer
-        if (order.usedLoyalPoints && order.usedLoyalPoints > 0) {
-            // If the order has used loyalty points, refund them to the customer
-            if (order.customer.usedLoyalPoints) {
-                order.customer.usedLoyalPoints = order.customer.usedLoyalPoints - order.usedLoyalPoints ;
-                const customerLevel = await CustomerLevelService.handleGetByThreshold(order.customer.usedLoyalPoints); // Get customer level by threshold
-                if (customerLevel) {
-                    order.customer.levelId = customerLevel._id; // Update customer level if applicable
-                }
-                order.customer.currentLoyalPoints = order.customer.currentLoyalPoints ? order.customer.currentLoyalPoints + order.usedLoyalPoints : order.usedLoyalPoints; // Refund loyalty points
-                customer = await CustomerService.handleUpdateCustomer(order.customer._id as Types.ObjectId, order.customer); // Update customer with refunded loyalty points
-            }
-        }
+        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE, 0, order.totalPrice); // Refund loyalty points to customer
+        //order.customer = order.customer as Customer; // Ensure customer is of type Customer
+        // if (order.usedLoyalPoints && order.usedLoyalPoints > 0) {
+        //     // If the order has used loyalty points, refund them to the customer
+        //     if (order.customer.usedLoyalPoints) {
+        //         order.customer.usedLoyalPoints = order.customer.usedLoyalPoints - order.usedLoyalPoints ;
+        //         const customerLevel = await CustomerLevelService.handleGetByThreshold(order.customer.usedLoyalPoints); // Get customer level by threshold
+        //         if (customerLevel) {
+        //             order.customer.levelId = customerLevel._id; // Update customer level if applicable
+        //         }
+        //         order.customer.currentLoyalPoints = order.customer.currentLoyalPoints ? order.customer.currentLoyalPoints + order.usedLoyalPoints : order.usedLoyalPoints; // Refund loyalty points
+        //         customer = await CustomerService.handleUpdateCustomer(order.customer._id as Types.ObjectId, order.customer); // Update customer with refunded loyalty points
+        //     }
+        // }
         // XỬ LÝ CỘNG HÀNG TỒN KHO
+        for (const item of order.products) {
+            item.product = item.product as Product; // Ensure item.product is of type Product
+            ProductService.handleUpdateProductStock(item.product, item.quantity, UpdateType.INCREASE); // Decrease stock for each product in the order
+        }
     }
     const cancelledStatus = await OrderStatusRepo.getStatusByName(OrderStatusName.CANCELLED); // Get the cancelled status
     if (!cancelledStatus) {

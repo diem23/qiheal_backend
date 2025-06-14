@@ -1,11 +1,8 @@
 import { Types } from "mongoose"
 import ProductRepo from "../repos/ProductRepo"
 import Product from "../model/Product";
-export enum UpdateType {
-    INCREASE = 'increase',
-    DECREASE = 'decrease',
-    SET = 'set'
-}
+import { UpdateType } from "../Types/UpdateType.prop";
+
 const handleSearch = async (req: any) => {
     const keyword = req.body.keyword;
     const page = parseInt(req.body.page) || 1
