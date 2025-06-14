@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { SystemSettingsRepo } from "../repos/SystemSettingsRepo";
-import { SystemSetting, SystemSettingName,  } from "../Types/SystemSettingTypes.props";
+import {  SystemSettingName,  } from "../Types/SystemSettingTypes.props";
 import SystemSettings from "../model/SystemSettings";
 
 const getAllSystemSettings = async () => {
@@ -19,7 +19,7 @@ const getSystemSettingById = async (id: Types.ObjectId) => {
     }
     return systemSetting;
 }
-const getSystemSettingByKey = async (key: SystemSettingName): Promise<SystemSetting> => {
+const getSystemSettingByKey = async (key: SystemSettingName): Promise<SystemSettings> => {
     // This function will retrieve a specific system setting by its key
     let systemSetting = await SystemSettingsRepo.getByKey(key);
     if (!systemSetting) {
@@ -30,7 +30,7 @@ const getSystemSettingByKey = async (key: SystemSettingName): Promise<SystemSett
     }
     let name = systemSetting.name as SystemSettingName // Ensure the name is of type SystemSettingName
     systemSetting.name = name;
-    const s: SystemSetting = {
+    const s: SystemSettings = {
         _id: systemSetting._id,
         name: systemSetting.name as SystemSettingName.CURRENCY | SystemSettingName.POINT_CONVERSION,
         value: systemSetting.value as { pointsPerDiscount: number; moneyPerDiscount: number; } | { currencyCode: string; symbol: string; },

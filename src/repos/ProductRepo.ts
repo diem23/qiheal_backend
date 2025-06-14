@@ -82,6 +82,16 @@ const updateImages = async (id: Types.ObjectId, files: string[]) => {
 
     return updatedProduct;
 };
+const chooseRelatedProducts = async (productId: Types.ObjectId, relatedProductIds: Types.ObjectId[]) => {
+    let currentProduct = await ProductModel.findById(productId).exec()
+    if (!currentProduct) {
+        throw new Error("Product not found")
+    }
+    currentProduct.relatedProduct = relatedProductIds
+    
+    await currentProduct.save();
+    return currentProduct;
+}
 const ProductRepo = {
     search,
     getAlls,
@@ -89,6 +99,7 @@ const ProductRepo = {
     create,
     update,
     del,
-    updateImages
+    updateImages,
+    chooseRelatedProducts
 }
 export default ProductRepo
