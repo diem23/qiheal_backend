@@ -55,6 +55,13 @@ const handleGetCustomerById = async (customerId: Types.ObjectId) => {
     }
     return customer;
 }
+const handleGetCustomerByEmail = async (email: string) => {
+    const customer = await CustomerRepo.findByUserEmail(email);
+    if (!customer) {
+        throw new Error("Customer not found with this email");
+    }
+    return customer;
+}
 const handleGetCustomerByUserId = async (userId: Types.ObjectId) => {
     const customer = await CustomerRepo.findByUserId(userId);
     if (!customer) {
@@ -91,6 +98,7 @@ const handleGetByPhone = async (phone: string) => {
 
 export const CustomerService = {
     handleGetByPhone,
+    handleGetCustomerByEmail,
     handleCustomerSignUp,
     handleCreateCustomer,
     handleGetCustomers,
