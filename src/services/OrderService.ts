@@ -139,8 +139,11 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
         throw new Error("Order not found");
     }
     order.status = order.status as OrderStatus; // Ensure order status is of type OrderStatus
-    if (order.status.status == OrderStatusName.PAID) {
+    if (order.status.status == OrderStatusName.PAID ) {
         throw new Error("Cannot cancel a paid order");
+    }
+    if ( order.status.status == OrderStatusName.DELIVERING) {
+        throw new Error ("Cannot cancel a delivering order");
     }
     order.customer = order.customer as Customer; // Ensure customer is of type Customer
     // refund current loyalty points to customer
