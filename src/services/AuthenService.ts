@@ -1,7 +1,12 @@
 import bcrypt from 'bcrypt';
 import UserRepo from '../repos/UserRepo';
 import { sign } from 'jsonwebtoken';
-import { UserRole } from '../model/User';
+import User, { UserRole } from '../model/User';
+import { CustomerService } from './CustomerService';
+const checkEmailFormat = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 const handleSignup = async (req: any) => {
     if (req.body.role.includes(UserRole.ADMIN)) {
         throw new Error("Admin cannot login through this route!!!")
@@ -15,7 +20,14 @@ const handleSignup = async (req: any) => {
 }
 const handleLogin = async (userInfo: any)=>{
     console.log("userInfo: ", userInfo.username);
-    const user = await UserRepo.findByUsername(userInfo.username);
+    let user: User | null = null;
+    if (checkEmailFormat(userInfo.username)) {
+        let customer = await CustomerService.handleGetCustomerByEmail(userInfo.email);
+        if (!customer) throw new Error("Customer not found!!!")
+        customer.user = customer.user as User;
+        user = customer.user;
+    } 
+    else user = await UserRepo.findByUsername(userInfo.username);
     if (!user) throw new Error("User not found!!!")
     if (!user.password) throw new Error("Password is not set!!!")
     const isMatch = await bcrypt.compare(userInfo.password, user.password);
@@ -33,5 +45,6 @@ const handleLogin = async (userInfo: any)=>{
 }
 export default{
     handleSignup,
+    checkEmailFormat,
     handleLogin
 }

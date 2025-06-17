@@ -1,12 +1,13 @@
 import {model, Schema, Types} from "mongoose"
 import CustomerLevel from "./CustomerLevel"
+import User from "./User"
 
 export default interface Customer {
     _id?: Types.ObjectId
     fullname?: string
     phone?: string
     email?: string
-    user?: Types.ObjectId
+    user?: Types.ObjectId | User
     usedLoyalPoints?: number
     currentLoyalPoints?: number
     levelId?: Types.ObjectId | CustomerLevel
