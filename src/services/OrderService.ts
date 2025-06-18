@@ -12,6 +12,7 @@ import { OrderStatusRepo } from "../repos/OrderStatus";
 import { OrderStatusService } from "./OrderStatusService";
 import ProductService from "./ProductService";
 import { UpdateType } from "../Types/UpdateType.prop";
+import VoucherService from "./VoucherService";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     let order = await OrderRepo.getById(orderId);
     if (!order) {
@@ -46,15 +47,17 @@ const handleCreateOrder = async (orderData: Order ) => {
     // Check to minus current loyalty points of customer
     if (customer){
         CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
-        if (orderData.usedLoyalPoints && customer.currentLoyalPoints){
-            customer.currentLoyalPoints -=   orderData.usedLoyalPoints ; // Update used loyalty points
-            if (customer.currentLoyalPoints < 0) {
-                throw new Error("Insufficient loyalty points");
-            }
-            console.log("Customer current loyalty points after deduction:", customer.currentLoyalPoints);
-            await CustomerService.handleUpdateCustomer(customer._id as Types.ObjectId, customer); // Update customer with new loyalty points
-        }
+        // if (orderData.usedLoyalPoints && customer.currentLoyalPoints){
+        //     customer.currentLoyalPoints -=   orderData.usedLoyalPoints ; // Update used loyalty points
+        //     if (customer.currentLoyalPoints < 0) {
+        //         throw new Error("Insufficient loyalty points");
+        //     }
+        //     console.log("Customer current loyalty points after deduction:", customer.currentLoyalPoints);
+        //     await CustomerService.handleUpdateCustomer(customer._id as Types.ObjectId, customer); // Update customer with new loyalty points
+        // }
     }
+
+    if (orderData.voucher) orderData.totalPrice = await handleApplyVoucher(orderData, orderData.voucher as Types.ObjectId); // Apply voucher if provided
     
 
     const firstStatus = await OrderStatusService.handleGetfirstStatus(); // Get the first status for the order
@@ -83,7 +86,6 @@ const handleGetOrderById = async (orderId: Types.ObjectId) => {
     }
     return order;
 }
-//need more fix
 const handleApproveOrder = async (orderId: Types.ObjectId) => {
     // This function will approve an order by its ID
     let order = await OrderRepo.getById(orderId);
@@ -104,6 +106,25 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
         throw new Error("Order update failed");
     }
     return updatedOrder;
+}
+// This function will apply a voucher to an order and mark it as used
+const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
+    const voucher = await VoucherService.handleGetVoucherById(voucherId); // Get voucher by code
+    if (!voucher) {
+        throw new Error("Voucher not found");
+    }
+    if (voucher.isActive === false) {
+        throw new Error("Voucher is not active");
+    }
+    if (!voucher.discount){
+        throw new Error("Voucher discount is required");
+    }
+    const check = await VoucherService.handleCheckApplyVoucher(voucher, order.totalPrice); // Check if voucher can be applied
+    if (!check) {
+        throw new Error("Voucher cannot be applied to this order");
+    }
+    await VoucherService.handleMarkVoucherAsUsed(voucher); // Apply voucher to order
+    return order.totalPrice - voucher.discount;
 }
 // if the order status changes to packaging from pending, we need to update 
 // the used loyalty points of the customer to update the customer level (if applicable)
@@ -151,25 +172,13 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     // Case where the order is not pending, we need to refund loyalty points if used
     if (order.status.status !== OrderStatusName.PENDING) {
         CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE, 0, order.totalPrice); // Refund loyalty points to customer
-        //order.customer = order.customer as Customer; // Ensure customer is of type Customer
-        // if (order.usedLoyalPoints && order.usedLoyalPoints > 0) {
-        //     // If the order has used loyalty points, refund them to the customer
-        //     if (order.customer.usedLoyalPoints) {
-        //         order.customer.usedLoyalPoints = order.customer.usedLoyalPoints - order.usedLoyalPoints ;
-        //         const customerLevel = await CustomerLevelService.handleGetByThreshold(order.customer.usedLoyalPoints); // Get customer level by threshold
-        //         if (customerLevel) {
-        //             order.customer.levelId = customerLevel._id; // Update customer level if applicable
-        //         }
-        //         order.customer.currentLoyalPoints = order.customer.currentLoyalPoints ? order.customer.currentLoyalPoints + order.usedLoyalPoints : order.usedLoyalPoints; // Refund loyalty points
-        //         customer = await CustomerService.handleUpdateCustomer(order.customer._id as Types.ObjectId, order.customer); // Update customer with refunded loyalty points
-        //     }
-        // }
         // XỬ LÝ CỘNG HÀNG TỒN KHO
         for (const item of order.products) {
             item.product = item.product as Product; // Ensure item.product is of type Product
             ProductService.handleUpdateProductStock(item.product, item.quantity, UpdateType.INCREASE); // Decrease stock for each product in the order
         }
     }
+    const restoredVoucher = order.voucher ? await VoucherService.handleRestoreVoucher(order.voucher as Types.ObjectId) : null; // Restore voucher if used
     const cancelledStatus = await OrderStatusRepo.getStatusByName(OrderStatusName.CANCELLED); // Get the cancelled status
     if (!cancelledStatus) {
         throw new Error("Cancelled order status not found");
@@ -194,4 +203,5 @@ export const OrderService = {
     handleCancelOrder,
     calTotalPrice,
     handleDeleteOrder,
+    handleApplyVoucher,
 };
