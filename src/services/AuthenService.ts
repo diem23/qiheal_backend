@@ -17,8 +17,6 @@ const handleSignup = async (req: any) => {
     }
     const oldUser = await UserRepo.findByUsername(req.body.username);
     if (oldUser) throw new Error("User already registered!!!")
-    //console.log("username: ", username);
-    //console.log("password: ", password);
     const user = await UserRepo.create(req.body);
     return user;
 }

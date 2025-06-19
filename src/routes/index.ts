@@ -15,6 +15,7 @@ import { OrderStatusRouter } from './orderStatus';
 import { UploadRouter } from './upload';
 import { ContactRouter } from './contact';
 import { SystemSettingRouter } from './systemSetting';
+import { VoucherRouter } from './voucher';
 
 
 const router = express.Router();
@@ -87,8 +88,17 @@ router.use('/contact', jwtVerify, verifyRoles(UserRole.ADMIN), ContactRouter
             "apiKeyAuth": []
     }] */
 );
-router.use('/systemSettings', SystemSettingRouter
+router.use('/systemSettings',jwtVerify, verifyRoles(UserRole.ADMIN), SystemSettingRouter
     // #swagger.tags = ['SystemSetting']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
+);
+router.use('/vouchers', jwtVerify, verifyRoles(UserRole.ADMIN), VoucherRouter
+    // #swagger.tags = ['Voucher']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
 );
 export default router;
 

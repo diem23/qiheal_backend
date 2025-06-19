@@ -14,7 +14,7 @@ import ProductService from "./ProductService";
 import { UpdateType } from "../Types/UpdateType.prop";
 import VoucherService from "./VoucherService";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
-    let order = await OrderRepo.getById(orderId);
+    const order = await OrderRepo.getById(orderId); // Retrieve the order by ID
     if (!order) {
         throw new Error("Order not found");
     }
@@ -47,31 +47,27 @@ const handleCreateOrder = async (orderData: Order ) => {
     // Check to minus current loyalty points of customer
     if (customer){
         CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
-        // if (orderData.usedLoyalPoints && customer.currentLoyalPoints){
-        //     customer.currentLoyalPoints -=   orderData.usedLoyalPoints ; // Update used loyalty points
-        //     if (customer.currentLoyalPoints < 0) {
-        //         throw new Error("Insufficient loyalty points");
-        //     }
-        //     console.log("Customer current loyalty points after deduction:", customer.currentLoyalPoints);
-        //     await CustomerService.handleUpdateCustomer(customer._id as Types.ObjectId, customer); // Update customer with new loyalty points
-        // }
+
     }
 
-    if (orderData.voucher) orderData.totalPrice = await handleApplyVoucher(orderData, orderData.voucher as Types.ObjectId); // Apply voucher if provided
+    
     
 
     const firstStatus = await OrderStatusService.handleGetfirstStatus(); // Get the first status for the order
     orderData.status = firstStatus._id; // Set the order status to the first status
     
-
-    // validate collaborator
-    let newOrder = await OrderRepo.create(orderData);
+    //Create order first to get the order ID => use the reference in the products
+    let newOrder= await OrderRepo.create(orderData);
     if (!newOrder) {
         throw new Error("Order creation failed");
     }
     // Calculate total price
-    newOrder.totalPrice = await calTotalPrice(newOrder._id);
-    return newOrder;
+    newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
+    console.log("New order info:", newOrder);
+    // Apply voucher if provided after calculating total price
+    if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
+    const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
+    return updatedOrder;
 }
 const handleGetOrders = async () => {
     // This function will retrieve all orders from the repository
@@ -110,6 +106,7 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
 // This function will apply a voucher to an order and mark it as used
 const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
     const voucher = await VoucherService.handleGetVoucherById(voucherId); // Get voucher by code
+    console.log("Voucher info:", voucher);
     if (!voucher) {
         throw new Error("Voucher not found");
     }

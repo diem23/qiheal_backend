@@ -38,7 +38,7 @@ const handleGetVoucherByCode = async (code: string) => {
     }
     return voucher;
 }
-const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number) => {
+const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number): Promise<boolean> => {
     // This function can be implemented to apply a voucher to a user's cart or order
     // For now, we will just return the voucher details
     if (!voucher) {
@@ -53,7 +53,7 @@ const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number) => 
     if ( !voucher.expiredDate) {
         throw new Error("Voucher expired date is required");
     }
-    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date()) ? voucher : null;
+    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date());
 
 }
 const handleRestoreVoucher = async (voucher: Voucher) => {
