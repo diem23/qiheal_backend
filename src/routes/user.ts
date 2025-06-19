@@ -1,9 +1,9 @@
-import { Router } from 'express';
+
 import express from 'express';
-export const UserRoute = express.Router();
 import verifyRoles from '../middleware/verifyRoles';
 import { UserRole } from '../model/User';
 import UserService from '../services/UserService';
+export const UserRoute = express.Router();
 UserRoute.get('/', async (req, res) => {
     const response = await UserService.handleGetUsers(req);
     res.status(200).json({
