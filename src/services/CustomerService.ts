@@ -15,7 +15,6 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     //         throw new Error("No customer levels available");
     //     }
     // }
-    console.log("User Data:", userData);
     const user = await UserService.handleCreateUser(userData);
 
     if (!user) {
@@ -69,7 +68,7 @@ const handleGetCustomerByUserId = async (userId: Types.ObjectId) => {
     }
     return customer;
 }
-const handleUpdateCustomer = async (customerId: Types.ObjectId, customerData: any) => {
+const handleUpdateCustomer = async (customerId: Types.ObjectId, customerData: Customer) => {
     const updatedCustomer = await CustomerRepo.update(customerId, customerData);
     if (!updatedCustomer) {
         throw new Error("Customer update failed");
