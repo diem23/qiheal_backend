@@ -4,7 +4,7 @@ import { CustomerLevelRepo } from "../repos/CustomerLevelRepo";
 import { UpdateType } from "../Types/UpdateType.prop";
 import Customer from "../model/Customer";
 import { CustomerService } from "./CustomerService";
-import { SystemSettingsService } from "./SystemSettingsService";
+import { ConversionType, SystemSettingsService } from "./SystemSettingsService";
 import { PointConversionValue, SystemSettingName } from "../Types/SystemSettingTypes.props";
 
 const handleCreateCustomerLevel = async (customerLevel: CustomerLevel) => {
@@ -83,15 +83,12 @@ const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateT
         throw new Error("Customer not found");
     }
 
-    const pointSetting = await SystemSettingsService.getSystemSettingByKey(SystemSettingName.POINT_CONVERSION);
     const customerId = customer._id as Types.ObjectId;
-    const point = pointSetting.value as PointConversionValue; // Ensure pointSetting has a value
     
     if (!customer.usedLoyalPoints) customer.usedLoyalPoints = 0; // Initialize usedLoyalPoints if not present
     if (!customer.currentLoyalPoints) customer.currentLoyalPoints = 0; // Initialize currentLoyalPoints if not present
     
-    const modifyingLoyaltyPoints = (totalPrice > 0) ? Math.floor(totalPrice / (point.moneyPerDiscount as number) * (point.pointsPerDiscount as number)) : loyaltyPoints; // Use provided loyalty points or current used points
-    
+    const modifyingLoyaltyPoints = (totalPrice > 0) ? await SystemSettingsService.pointAndMoneyConversion(ConversionType.MONEY_TO_POINT, totalPrice, 0) : loyaltyPoints; // Use provided loyalty points or current used points
     if (updateType === UpdateType.INCREASE) {
          // Ensure customer ID is of type ObjectId
         if (totalPrice > 0) customer.usedLoyalPoints += modifyingLoyaltyPoints; // Add used loyalty points to customer
@@ -107,9 +104,14 @@ const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateT
     
     const newCustomerLevel = await CustomerLevelService.handleGetByThreshold(customer.usedLoyalPoints) // Ensure levelId is of type CustomerLevel
     if (newCustomerLevel) {
-        customer.levelId = newCustomerLevel; // Update customer level if applicable
+        customer.levelId = newCustomerLevel._id; // Update customer level if applicable
     }
-    customer = await CustomerService.handleUpdateCustomer(customerId, customer); // Update customer with new loyalty points and level
+    const tempCustomer: Customer = {
+        usedLoyalPoints: customer.usedLoyalPoints,
+        currentLoyalPoints: customer.currentLoyalPoints,
+        levelId: customer.levelId
+    }
+    customer = await CustomerService.handleUpdateCustomer(customerId, tempCustomer); // Update customer with new loyalty points and level
 }
 export const CustomerLevelService = {
     handleUpdateLoyaltyPoints,

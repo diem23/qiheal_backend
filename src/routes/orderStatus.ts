@@ -54,12 +54,11 @@ OrderStatusRouter.post('/', verifyRoles(UserRole.ADMIN), async (req, res) => {
         });
     }
 });
-OrderStatusRouter.put('/', verifyRoles(UserRole.ADMIN), async (req, res) => {
+OrderStatusRouter.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Create a new order status',
             schema: { 
-                $id: "60c72b2f9b1e8b001c8e4d3a",
                 $status: "pending",
                 $nextStatus: "60c72b2f9b1e8b001c8e4d3a" ,
                 $isFirstStatus: false
@@ -70,7 +69,7 @@ OrderStatusRouter.put('/', verifyRoles(UserRole.ADMIN), async (req, res) => {
         if (!Types.ObjectId.isValid(req.body.id)) {
             return res.status(400).json({ message: 'Invalid order status ID' });
         }
-        const orderStatusId = new Types.ObjectId(req.body.id);
+        const orderStatusId = new Types.ObjectId(req.params.id);
         const response = await OrderStatusService.handleUpdateOrderStatus( orderStatusId,req.body);
         res.status(200).json({
             message: 'Order status updated successfully',

@@ -40,15 +40,11 @@ const handleGetProductById = async (req: any) => {
     return product
 }
 const handleCreateProduct = async (product: Product) => {
-    console.log("product: ", product);
     const newProduct = await ProductRepo.create(product)
     return newProduct
 }   
-const handleUpdateProduct = async (product: Product) => {
-    if (Types.ObjectId.isValid(product._id) === false) {
-        throw new Error('Invalid Product ID');
-    }
-    const productId = product._id as Types.ObjectId
+const handleUpdateProduct = async (product: Product, productId: Types.ObjectId) => {
+
     const updatedProduct = await ProductRepo.update(productId, product)
     return updatedProduct
 }
@@ -69,7 +65,10 @@ const handleUpdateProductStock = async (product: Product, quantity: number, upda
         default:
             throw new Error('Invalid update type');
     }
-    const updatedProduct = await ProductRepo.update(product._id as Types.ObjectId, product); 
+    const tempProduct: Product = {
+        stockQty: product.stockQty
+    }
+    const updatedProduct = await ProductRepo.update(product._id as Types.ObjectId, tempProduct); 
     return updatedProduct;
 }
 const handleDeleteProduct = async (req: any) => {

@@ -13,6 +13,7 @@ import { OrderStatusService } from "./OrderStatusService";
 import ProductService from "./ProductService";
 import { UpdateType } from "../Types/UpdateType.prop";
 import VoucherService from "./VoucherService";
+import { ConversionType, SystemSettingsService } from "./SystemSettingsService";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     const order = await OrderRepo.getById(orderId); // Retrieve the order by ID
     if (!order) {
@@ -22,7 +23,7 @@ const calTotalPrice = async (orderId: Types.ObjectId) => {
         item.product = item.product as Product; // Ensure item.product is of type Product
         return total + (item.product.actualPrice ? item.product.actualPrice : 0) * item.quantity;
     }, 0);
-    totalPrice -= order.usedLoyalPoints ? order.usedLoyalPoints : 0; // Deduct used loyalty points if any
+    totalPrice -= order.usedLoyalPoints ? await SystemSettingsService.pointAndMoneyConversion(ConversionType.POINT_TO_MONEY, 0, order.usedLoyalPoints) : 0; // Deduct used loyalty points if any
     if (order.customer) {
         order.customer = order.customer as Customer;
         if (order.customer.levelId) {
@@ -36,14 +37,13 @@ const handleCreateOrder = async (orderData: Order ) => {
     // This function will handle the creation of a new order
     // It should validate the order data and then call the repository to create the order
     let customer: Customer | null = null;
+    customer = await CustomerService.handleGetCustomerById(orderData.customer as Types.ObjectId);
     if (!orderData.phone){
-        if (!orderData.customer) {
+        if (!customer) {
             throw new Error("Phone or customer ID is required to create an order");
         }
-        customer = await CustomerService.handleGetCustomerById(orderData.customer as Types.ObjectId);
         orderData.phone = customer.phone as string; // Use customer's phone if not provided
     }
-    console.log("Customer data:", customer);
     // Check to minus current loyalty points of customer
     if (customer){
         CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
@@ -63,7 +63,6 @@ const handleCreateOrder = async (orderData: Order ) => {
     }
     // Calculate total price
     newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
-    console.log("New order info:", newOrder);
     // Apply voucher if provided after calculating total price
     if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
     const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
@@ -73,6 +72,19 @@ const handleGetOrders = async () => {
     // This function will retrieve all orders from the repository
     const orders = await OrderRepo.getAll();
     return orders;
+}
+const handleUpdateOrder = async (orderId: Types.ObjectId, orderData: OrderData) => {
+    // This function will update an existing order by its ID
+    const order = await OrderRepo.getById(orderId);
+    if (!order) {
+        throw new Error("Order not found");
+    }
+    // Update order fields with provided data
+    const updatedOrder = OrderRepo.update(orderId, orderData);
+    if (!updatedOrder) {
+        throw new Error("Order update failed");
+    }
+    return updatedOrder;
 }
 const handleGetOrderById = async (orderId: Types.ObjectId) => {
     // This function will retrieve a specific order by its ID
@@ -89,7 +101,7 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
         throw new Error("Order not found");
     }
     order.status = order.status as OrderStatus; // Ensure order status is of type OrderStatus
-    const nextStatus = await OrderStatusRepo.getById(order.status.nextStatus as Types.ObjectId); // Get the next status for the order
+    const nextStatus = await OrderStatusService.handleGetOrderStatusById(order.status.nextStatus as Types.ObjectId); // Get the next status for the order
     if (!nextStatus) {
         throw new Error("Next order status not found");
     }
@@ -106,7 +118,6 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
 // This function will apply a voucher to an order and mark it as used
 const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
     const voucher = await VoucherService.handleGetVoucherById(voucherId); // Get voucher by code
-    console.log("Voucher info:", voucher);
     if (!voucher) {
         throw new Error("Voucher not found");
     }
@@ -201,4 +212,5 @@ export const OrderService = {
     calTotalPrice,
     handleDeleteOrder,
     handleApplyVoucher,
+    handleUpdateOrder,
 };

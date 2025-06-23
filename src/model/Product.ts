@@ -1,6 +1,6 @@
 import {model, Schema, Types} from "mongoose"
 export default interface Product{
-    _id: Types.ObjectId;
+    _id?: Types.ObjectId;
     name?: string;
     desc?: string;
     price?: number;
