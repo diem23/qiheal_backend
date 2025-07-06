@@ -2,6 +2,7 @@ import {model, Schema, Types} from "mongoose"
 import Customer from "./Customer"
 import Product from "./Product"
 import OrderStatus from "./OrderStatus"
+import Voucher from "./Voucher"
 
 export default interface Order {
     _id?: Types.ObjectId
@@ -19,6 +20,7 @@ export default interface Order {
     ward?: string // Optional, if the order is shipped to a specific ward
     address?: string // Optional, if the order is shipped to a specific address
     note?: string // Optional, if the customer adds a note to the order
+    voucher?: Types.ObjectId | Voucher
     status: Types.ObjectId | OrderStatus // e.g., 'pending', 'completed', 'cancelled'
     isActive?: boolean
 }
@@ -38,6 +40,7 @@ const schema = new Schema<Order>({
     ward: {type: Schema.Types.String, required: false},
     address: {type: Schema.Types.String, required: false},
     note: {type: Schema.Types.String, required: false},
+    voucher: {type: Schema.Types.ObjectId, ref: "Vouchers", required: false},
     status: {type: Schema.Types.ObjectId, ref: "OrderStatuses", required: true},
     isActive: {type: Schema.Types.Boolean, required: true, default: true}
 }, {

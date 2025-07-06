@@ -7,19 +7,14 @@ const handleSearch = async (req: any) => {
     const keyword = req.body.keyword;
     const page = parseInt(req.body.page) || 1
     const limit = parseInt(req.body.limit) || 10
-    //console.log("keyword: ", keyword);
-    //console.log("page: ", page);
-    //console.log("limit: ", limit);
     const products = await ProductRepo.search(keyword, page, limit)
     return products
 }
 const handleGetProducts = async (req: any) => {
     const products = await ProductRepo.getAlls()
-    //console.log(products)
     return products
 }
 const handleGetProductsByListOfIds = async (productIds: Types.ObjectId[]) => {
-    //const productIds = req.body.productIds;
     if (!Array.isArray(productIds) || productIds.length === 0) {
         throw new Error('Invalid product IDs');
     }
@@ -41,24 +36,15 @@ const handleGetProductsByListOfIds = async (productIds: Types.ObjectId[]) => {
 }
 const handleGetProductById = async (req: any) => {
     const productId =  Types.ObjectId.createFromHexString(req.params.id)
-    //console.log("productId: ",productId);
     const product = await ProductRepo.getById(productId)
-    //console.log(product);
     return product
 }
 const handleCreateProduct = async (product: Product) => {
-   
-    //console.log("filesBase64: ", filesBase64);
-    console.log("product: ", product);
     const newProduct = await ProductRepo.create(product)
     return newProduct
 }   
-const handleUpdateProduct = async (product: Product) => {
-    if (Types.ObjectId.isValid(product._id) === false) {
-        throw new Error('Invalid Product ID');
-    }
-    const productId = product._id as Types.ObjectId
-   // console.log("productId: ", productId);
+const handleUpdateProduct = async (product: Product, productId: Types.ObjectId) => {
+
     const updatedProduct = await ProductRepo.update(productId, product)
     return updatedProduct
 }
@@ -79,7 +65,10 @@ const handleUpdateProductStock = async (product: Product, quantity: number, upda
         default:
             throw new Error('Invalid update type');
     }
-    const updatedProduct = await ProductRepo.update(product._id as Types.ObjectId, product); 
+    const tempProduct: Product = {
+        stockQty: product.stockQty
+    }
+    const updatedProduct = await ProductRepo.update(product._id as Types.ObjectId, tempProduct); 
     return updatedProduct;
 }
 const handleDeleteProduct = async (req: any) => {

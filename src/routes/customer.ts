@@ -43,18 +43,14 @@ CustomerRouter.put("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
         }
         */
     try {
-        const customerData = {  
-            phone: req.body.phone,
-            email: req.body.email,
-            levelId: req.body.levelId,
-        };
+
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
                 message: "Invalid customer ID",
             });
         }
         const customerId = new Types.ObjectId( req.params.id);
-        const response = await CustomerService.handleUpdateCustomer(customerId, customerData);
+        const response = await CustomerService.handleUpdateCustomer(customerId, req.body);
         if (response) {
             return res.status(200).json({
                 message: "Customer updated successfully",

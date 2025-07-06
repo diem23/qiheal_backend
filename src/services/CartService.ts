@@ -29,12 +29,8 @@ const handleUpdateCart = async (cartId: Types.ObjectId, cart: Cart) => {
         throw new Error("Cart not found");
     }
     existingCart.products = cart.products;
-    //console.log("Existing Cart:", existingCart);
     let updatedCart = await CartRepo.update(cartId, existingCart)
     updatedCart = await calTotalPrice(cartId);
-    // Here you would typically call your CartRepo.update method
-    // For example:
-    // const updatedCart = await CartRepo.update(cartId, cart);
     
     // Simulating the update operation
     return updatedCart;

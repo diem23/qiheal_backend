@@ -27,11 +27,9 @@ ProductRouter.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
         } 
         */
     try{
-        console.log("req.body: ", req.body);
         const response = await ProductService.handleCreateProduct(req.body)
         res.send(response)
     } catch (error) {
-        console.error("create product error:", error);
         return res.status(500).json({
             message: "Internal server error",
             error: error instanceof Error ? error.message : String(error),
@@ -40,13 +38,12 @@ ProductRouter.post('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
 
 }
 );
-ProductRouter.put('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
+ProductRouter.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
     // #swagger.tags = ['Product']
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Add a user',
             schema: { 
-                $id: "645b1f2e8f1b2c001c8e4d3a",
                 $name: "Office Chair",
                 $desc: "A comfortable office chair with adjustable height",
                 $price: 120.99,
@@ -59,7 +56,11 @@ ProductRouter.put('/',verifyRoles(UserRole.ADMIN), async (req, res) => {
             }
         } 
         */
-    const response = await ProductService.handleUpdateProduct(req.body)
+    if (Types.ObjectId.isValid(req.params.id) === false) {
+        return res.status(400).json({ message: 'Invalid Product ID' });
+    }
+    const productId = new Types.ObjectId(req.params.id);
+    const response = await ProductService.handleUpdateProduct(req.body, productId)
     if (!response) {
         return res.status(404).json({ message: 'Product not found' });
     }
@@ -104,7 +105,7 @@ ProductRouter.post("/upload1/:id", upload.array("multFiles", 2), async (req, res
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({ message: 'Invalid Product ID' });
     }
-    
+    const productId = new Types.ObjectId(req.params.id);
    
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ message: 'No files uploaded' });
@@ -112,10 +113,9 @@ ProductRouter.post("/upload1/:id", upload.array("multFiles", 2), async (req, res
     req.files = req.files as Express.Multer.File[]; // Type assertion to ensure req.files is treated as an array
     const fileNameArray = req.files?.map(file => file.filename);
     const product = {
-        _id: Types.ObjectId.createFromHexString(req.params.id),
         images: fileNameArray
     };
-    const updatedProduct = await ProductService.handleUpdateProduct(product);
+    const updatedProduct = await ProductService.handleUpdateProduct(product, productId);
     if (!updatedProduct) {
         return res.status(404).json({ message: 'Product not found' });
     }

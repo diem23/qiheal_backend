@@ -31,9 +31,7 @@ const getById = async (id: Types.ObjectId): Promise<Product|null> => {
 
 const create = async (
     product: Product,
-    //accessTokenKey: string,
 )  => {
-    //console.log("product: ", product);
     try{
     if (!product.actualPrice) product.actualPrice = product.price;
     const newProduct = await ProductModel.create(product)
@@ -45,10 +43,7 @@ const create = async (
 }
 
 const update = async (id: Types.ObjectId, product: any) => {
-    //console.log("product: ", product);
-    //console.log("id: ", id);
     const updatedProduct = await ProductModel.findByIdAndUpdate(id, product, { new: true }).exec()
-    //console.log("updatedProduct: ", updatedProduct);
     return updatedProduct
 }
 const del = async (id: Types.ObjectId) => {
@@ -64,7 +59,6 @@ const updateImages = async (id: Types.ObjectId, files: string[]) => {
     let images: string[] = []
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        //console.log("file: ", file);
         if (!file) {
             console.log("No file found");
             continue;
