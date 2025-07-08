@@ -83,14 +83,21 @@ OrderRouter.post('/cancle',  async (req, res) => {
             }
         } 
         */
-    const response = await OrderService.handleCancelOrder(req.body.orderId);
-    if (!response) {
-        return res.status(404).json({ message: 'Order not found' });
+    try {
+        const response = await OrderService.handleCancelOrder(req.body.orderId);
+        if (!response) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        res.status(200).json({
+            message: 'Order approved successfully',
+            data: response,
+        });
     }
-    res.status(200).json({
-        message: 'Order approved successfully',
-        data: response,
-    });
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Internal Server Error',
+        });
+    }
 });
 OrderRouter.delete('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
     try {

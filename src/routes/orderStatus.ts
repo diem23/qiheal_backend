@@ -66,7 +66,7 @@ OrderStatusRouter.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
         } 
         */
     try {
-        if (!Types.ObjectId.isValid(req.body.id)) {
+        if (!Types.ObjectId.isValid(req.params.id)) {
             return res.status(400).json({ message: 'Invalid order status ID' });
         }
         const orderStatusId = new Types.ObjectId(req.params.id);

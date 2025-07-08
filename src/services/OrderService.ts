@@ -61,12 +61,23 @@ const handleCreateOrder = async (orderData: Order ) => {
     if (!newOrder) {
         throw new Error("Order creation failed");
     }
-    // Calculate total price
-    newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
-    // Apply voucher if provided after calculating total price
-    if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
-    const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
-    return updatedOrder;
+    try{
+        // Calculate total price
+        newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
+        if (newOrder.totalPrice < 300000) newOrder.totalPrice += 20000; // Add shipping fee if total price is less than 300000
+        // Apply voucher if provided after calculating total price
+        if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
+        const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
+        return updatedOrder;
+    }
+    catch (error) {
+        // If there is an error, we need to cancel the order and refund loyalty points
+        if (customer) {
+            CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.INCREASE, orderData.usedLoyalPoints, 0); // Refund loyalty points to customer
+        }
+        await OrderRepo.del(newOrder._id as Types.ObjectId); // Delete the order if creation failed
+        throw error; // Re-throw the error to be handled by the caller
+    }
 }
 const handleGetOrders = async () => {
     // This function will retrieve all orders from the repository
