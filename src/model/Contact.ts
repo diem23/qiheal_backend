@@ -17,9 +17,9 @@ export const COLLECTION_NAME = 'Contacts';
 const schema = new Schema<Contact>({
     fullname: { type: String, required: true },
     phone: { type: String, required: true },
-    email: { type: String, required: true },
-    address: { type: String, required: true },
-    serviceType: { type: String, enum: Object.values(ServiceType), required: true },
+    email: { type: String, required: false },
+    address: { type: String, required: false },
+    serviceType: { type: String, enum: Object.values(ServiceType), required: false },
     note: { type: String, default: '' }
 }, {
     timestamps: true,
