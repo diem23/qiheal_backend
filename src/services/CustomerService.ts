@@ -7,14 +7,10 @@ import { CartService } from "./CartService";
 import UserService from "./UserService";
 
 const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
-    // if (!customerData.levelId){
-    //     const listCustomerLevel = await CustomerLevelRepo.getAll(); // Ensure levelId is optional
-    //     if (listCustomerLevel.length > 0) {
-    //         customerData.levelId = listCustomerLevel[0]._id; // Assign the first level if not provided
-    //     } else {
-    //         throw new Error("No customer levels available");
-    //     }
-    // }
+    const existingCustomer = await UserService.handleGetUserByUserName(userData.username);
+    if (existingCustomer) {
+        throw new Error("Username already exists");
+    }
     const user = await UserService.handleCreateUser(userData);
 
     if (!user) {
