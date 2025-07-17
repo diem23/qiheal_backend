@@ -10,6 +10,16 @@ const handleGetUserById = async (req: any) => {
     const user = await UserRepo.getById(userId);
     return user;
 }
+const handleGetUserByUserName = async (username: string| undefined) => {
+    if (!username) {
+        throw new Error("Username is required");
+    }
+    const user = await UserRepo.findByUsername(username);
+    if (!user) {
+        throw new Error("User not found with this username");
+    }
+    return user;
+}
 const handleCreateUser = async (user: User) => {
     const newUser = await UserRepo.create(user);
     return newUser;
@@ -27,6 +37,7 @@ const handleDeleteUser = async (req: any) => {
 const UserService = {
     handleGetUsers,
     handleGetUserById,
+    handleGetUserByUserName,
     handleCreateUser,
     handleUpdateUser, 
     handleDeleteUser

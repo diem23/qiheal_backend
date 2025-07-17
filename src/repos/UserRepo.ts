@@ -32,8 +32,12 @@ const create = async (user: User)=> {
         throw new Error('Failed to create user!!!')
     }
 }
+const findByEmail = async (email: string) => {
+    return UserModel.findOne({ email: email }).lean().exec();
+}
 export default {
     findByUsername,
+    findByEmail,
     create,
     getAlls,
     getById,
