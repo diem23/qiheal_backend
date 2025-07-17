@@ -7,30 +7,54 @@ import { CartService } from "./CartService";
 import UserService from "./UserService";
 
 const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
-    const existingCustomer = await UserService.handleGetUserByUserName(userData.username);
+    
+    let existingCustomer = await UserService.handleGetUserByUserName(userData.username);
     if (existingCustomer) {
         throw new Error("Username already exists");
     }
+    if (customerData.email) existingCustomer = await CustomerService.handleGetCustomerByEmail(customerData.email);
+    if (existingCustomer) {
+        throw new Error("Email already exists");
+    }
+    if (customerData.phone) existingCustomer = await CustomerService.handleGetByPhone(customerData.phone);
+    if (existingCustomer) {
+        throw new Error("Phone number already exists");
+    }   
     const user = await UserService.handleCreateUser(userData);
 
     if (!user) {
         throw new Error("User creation failed");
     }
-    
-    customerData.user = user._id; // Assuming user._id is the ID of the created user
-    const cart: Cart = {
-        products: [],
-        totalPrice: 0,
-    };
-    const newCart = await CartService.handleCreateCart(cart);
-    if (!newCart) { 
-        throw new Error("Cart creation failed");
+    try {
+        customerData.user = user._id; // Assuming user._id is the ID of the created user
+        const cart: Cart = {
+            products: [],
+            totalPrice: 0,
+        };
+        const newCart = await CartService.handleCreateCart(cart);
+        try {
+            if (!newCart) { 
+                throw new Error("Cart creation failed");
+            }
+            customerData.cartId = newCart._id; // Assuming newCart._id is the ID of the created cart
+            const newCustomer = await handleCreateCustomer(customerData);
+            return newCustomer;
+        }
+        catch (error) {
+            if (newCart) {
+                await CartService.handleDeleteCart(newCart._id);
+            }
+            throw new Error(error instanceof Error ? error.message : String(error));
+        }
+        
+        
+        
+    } catch (error) {
+        if (user) {
+            await UserService.handleDeleteUser(user.id);
+        }
+        throw new Error(error instanceof Error ? error.message : String(error));
     }
-    customerData.cartId = newCart._id; // Assuming newCart._id is the ID of the created cart
-    const newCustomer = await handleCreateCustomer(customerData);
-    
-    
-    return newCustomer;
 }
 const handleCreateCustomer = async (customerData: Customer) => {
     const newCustomer = await CustomerRepo.create(customerData);

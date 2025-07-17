@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import User from "../model/User";
 import UserRepo from "../repos/UserRepo";
 
@@ -15,9 +16,6 @@ const handleGetUserByUserName = async (username: string| undefined) => {
         throw new Error("Username is required");
     }
     const user = await UserRepo.findByUsername(username);
-    if (!user) {
-        throw new Error("User not found with this username");
-    }
     return user;
 }
 const handleCreateUser = async (user: User) => {
@@ -29,8 +27,7 @@ const handleUpdateUser = async (req: any) => {
     const updatedUser = await UserRepo.update(userId, req.body);
     return updatedUser;
 }
-const handleDeleteUser = async (req: any) => {
-    const userId = req.params.id;
+const handleDeleteUser = async (userId: string) => {
     const deletedUser = await UserRepo.del(userId);
     return deletedUser;
 }
