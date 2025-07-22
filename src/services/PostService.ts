@@ -42,7 +42,7 @@ const addBase64ImagesToPost = async (req: any) => {
     const files = req.files?.singleFile;
     const fileBase64 = 'data:image/jpeg;base64,' + files?.data.toString('base64');
     if (!Types.ObjectId.isValid(postId)) {
-        throw new Error('Invalid Product ID');
+        throw new Error('Mã sản phẩm không hợp lệ');
     }
 
     const updatedProduct = await PostRepo.updateImages(

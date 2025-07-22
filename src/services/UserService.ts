@@ -13,7 +13,7 @@ const handleGetUserById = async (req: any) => {
 }
 const handleGetUserByUserName = async (username: string| undefined) => {
     if (!username) {
-        throw new Error("Username is required");
+        throw new Error("Cần có tên đăng nhập");
     }
     const user = await UserRepo.findByUsername(username);
     return user;

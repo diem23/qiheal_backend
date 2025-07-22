@@ -4,7 +4,7 @@ import Post, { PostModel } from "../model/Post"
 const chooseRelatedPosts = async (postId: Types.ObjectId, relativePostIds: Types.ObjectId[]): Promise<Post> => {
     let currentPost = await PostModel.findById(postId).exec()
     if (!currentPost) {  
-        throw new Error("Post not found")
+        throw new Error("Không tìm thấy bài viết")
     }
     currentPost.relativePosts = relativePostIds
     
