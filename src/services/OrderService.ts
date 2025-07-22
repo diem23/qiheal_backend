@@ -17,7 +17,7 @@ import { CustomerRepo } from "../repos/CustomerRepo";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     const order = await OrderRepo.getById(orderId); // Retrieve the order by ID
     if (!order) {
-        throw new Error("Order not found");
+        throw new Error("Không tìm thấy đơn hàng");
     }
     let totalPrice = order.products.reduce((total, item) => {
         item.product = item.product as Product; // Ensure item.product is of type Product
@@ -40,7 +40,7 @@ const handleCreateOrder = async (orderData: Order ) => {
     customer = await CustomerRepo.findById(orderData.customer as Types.ObjectId);
     if (!orderData.phone){
         if (!customer) {
-            throw new Error("Phone or customer ID is required to create an order");
+            throw new Error("Cần có mã đơn hàng hoặc số điện thoại để tạo đơn hàng");
         }
         orderData.phone = customer.phone as string; // Use customer's phone if not provided
     }
@@ -59,7 +59,7 @@ const handleCreateOrder = async (orderData: Order ) => {
     //Create order first to get the order ID => use the reference in the products
     let newOrder= await OrderRepo.create(orderData);
     if (!newOrder) {
-        throw new Error("Order creation failed");
+        throw new Error("Tạo đơn hàng thất bại");
     }
     try{
         // Calculate total price
@@ -88,12 +88,12 @@ const handleUpdateOrder = async (orderId: Types.ObjectId, orderData: OrderData) 
     // This function will update an existing order by its ID
     const order = await OrderRepo.getById(orderId);
     if (!order) {
-        throw new Error("Order not found");
+        throw new Error("Không tìm thấy đơn hàng");
     }
     // Update order fields with provided data
     const updatedOrder = OrderRepo.update(orderId, orderData);
     if (!updatedOrder) {
-        throw new Error("Order update failed");
+        throw new Error("Cập nhật đơn hàng thất bại");
     }
     return updatedOrder;
 }
@@ -101,7 +101,7 @@ const handleGetOrderById = async (orderId: Types.ObjectId) => {
     // This function will retrieve a specific order by its ID
     const order = await OrderRepo.getById(orderId);
     if (!order) {
-        throw new Error("Order not found");
+        throw new Error("Không tìm thấy đơn hàng");
     }
     return order;
 }
@@ -109,12 +109,12 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
     // This function will approve an order by its ID
     let order = await OrderRepo.getById(orderId);
     if (!order) {
-        throw new Error("Order not found");
+        throw new Error("Không tìm thấy đơn hàng");
     }
     order.status = order.status as OrderStatus; // Ensure order status is of type OrderStatus
     const nextStatus = await OrderStatusService.handleGetOrderStatusById(order.status.nextStatus as Types.ObjectId); // Get the next status for the order
     if (!nextStatus) {
-        throw new Error("Next order status not found");
+        throw new Error("Không tìm thấy trạng thái đơn hàng tiếp theo");
     }
     if (nextStatus?.status == OrderStatusName.PACKAGING && order.customer) {
         await handleConfirmOrder(order); // Handle confirm order if status is packaging
@@ -122,7 +122,7 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
     order.status = nextStatus; // Update order status to the next status
     const updatedOrder = await OrderRepo.update(orderId, order); // Update the order in the repository  
     if (!updatedOrder) {
-        throw new Error("Order update failed");
+        throw new Error("Cập nhật đơn hàng thất bại");
     }
     return updatedOrder;
 }
@@ -130,17 +130,17 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
 const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
     const voucher = await VoucherService.handleGetVoucherById(voucherId); // Get voucher by code
     if (!voucher) {
-        throw new Error("Voucher not found");
+        throw new Error("Không tìm thấy voucher");
     }
     if (voucher.isActive === false) {
-        throw new Error("Voucher is not active");
+        throw new Error("Voucher không hoạt động");
     }
     if (!voucher.discount){
-        throw new Error("Voucher discount is required");
+        throw new Error("Cần có giá trị giảm giá cho voucher");
     }
     const check = await VoucherService.handleCheckApplyVoucher(voucher, order.totalPrice); // Check if voucher can be applied
     if (!check) {
-        throw new Error("Voucher cannot be applied to this order");
+        throw new Error("Voucher không thể áp dụng cho đơn hàng này");
     }
     await VoucherService.handleMarkVoucherAsUsed(voucher); // Apply voucher to order
     return order.totalPrice - voucher.discount;
@@ -176,14 +176,14 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     let order = await OrderRepo.getById(orderId);
     let customer : Customer | null = null;
     if (!order) {
-        throw new Error("Order not found");
+        throw new Error("Không tìm thấy đơn hàng");
     }
     order.status = order.status as OrderStatus; // Ensure order status is of type OrderStatus
     if (order.status.status == OrderStatusName.PAID ) {
-        throw new Error("Cannot cancel a paid order");
+        throw new Error("Không thể hủy đơn hàng đã thanh toán");
     }
     if ( order.status.status == OrderStatusName.DELIVERING) {
-        throw new Error ("Cannot cancel a delivering order");
+        throw new Error ("Không thể hủy đơn hàng đang giao");
     }
     order.customer = order.customer as Customer; // Ensure customer is of type Customer
     // refund current loyalty points to customer
@@ -200,7 +200,7 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     const restoredVoucher = order.voucher ? await VoucherService.handleRestoreVoucher(order.voucher as Types.ObjectId) : null; // Restore voucher if used
     const cancelledStatus = await OrderStatusRepo.getStatusByName(OrderStatusName.CANCELLED); // Get the cancelled status
     if (!cancelledStatus) {
-        throw new Error("Cancelled order status not found");
+        throw new Error("Không tìm thấy trạng thái huỷ cho đơn hàng");
     }
     order.status = cancelledStatus; // Update order status to cancelled
     const updatedOrder = await OrderRepo.update(orderId, order); // Update the order in the repository
@@ -210,7 +210,7 @@ const handleDeleteOrder = async (orderId: Types.ObjectId) => {
     // This function will delete an order by its ID
     const deletedOrder = await OrderRepo.del(orderId);
     if (!deletedOrder) {
-        throw new Error("Order deletion failed");
+        throw new Error("Xóa đơn hàng thất bại");
     }
     return deletedOrder;
 }

@@ -15,7 +15,7 @@ const handleCreateCustomerLevel = async (customerLevel: CustomerLevel) => {
     // Simulating the create operation
     const newCustomerLevel = CustomerLevelRepo.create(customerLevel);
     if (!newCustomerLevel) {
-        throw new Error("Customer Level creation failed");
+        throw new Error("Tạo phân hạng khách hàng thất bại");
     }
     return newCustomerLevel;
 }
@@ -36,7 +36,7 @@ const handleGetCustomerLevelById = async (customerLevelId: Types.ObjectId) => {
     // Simulating the get operation
     const customerLevel = CustomerLevelRepo.getById(customerLevelId);
     if (!customerLevel) {
-        throw new Error("Customer Level not found");
+        throw new Error("Không tìm thấy phân hạng khách hàng");
     }
     return customerLevel;
 }
@@ -48,7 +48,7 @@ const handleUpdateCustomerLevel = async (customerLevelId: Types.ObjectId, custom
     // Simulating the update operation
     const updatedCustomerLevel = CustomerLevelRepo.update(customerLevelId, customerLevel);
     if (!updatedCustomerLevel) {
-        throw new Error("Customer Level update failed");
+        throw new Error("Cập nhật phân hạng khách hàng thất bại");
     }
     return updatedCustomerLevel;
 }
@@ -60,7 +60,7 @@ const handleDeleteCustomerLevel = async (customerLevelId: Types.ObjectId) => {
     // Simulating the delete operation
     const deletedCustomerLevel = CustomerLevelRepo.del(customerLevelId);
     if (!deletedCustomerLevel) {
-        throw new Error("Customer Level deletion failed");
+        throw new Error("Xóa phân hạng khách hàng thất bại");
     }
     return deletedCustomerLevel;
 }
@@ -68,7 +68,7 @@ const handleGetByThreshold = async (threshold: number) => {
     // This function will retrieve customer levels by a specific threshold
     const customerLevels = await CustomerLevelRepo.getAll();
     if (!customerLevels || customerLevels.length === 0) {
-        throw new Error("No customer levels found");
+        throw new Error("Không tìm thấy phân hạng khách hàng");
     }
     if (customerLevels[customerLevels.length - 1].threshold){
         if (threshold > (customerLevels[customerLevels.length - 1].threshold as number)) {
@@ -80,7 +80,7 @@ const handleGetByThreshold = async (threshold: number) => {
 }
 const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateType, loyaltyPoints: number = 0, totalPrice: number = 0) => {
     if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error("Không tìm thấy khách hàng");
     }
 
     const customerId = customer._id as Types.ObjectId;
@@ -96,7 +96,7 @@ const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateT
     }
     else if (updateType === UpdateType.DECREASE) {
         if ( customer.usedLoyalPoints < modifyingLoyaltyPoints) {
-            throw new Error("Insufficient loyalty points to decrease");
+            throw new Error("Không đủ điểm thưởng để giảm");
         }
         if (totalPrice > 0) customer.usedLoyalPoints -= modifyingLoyaltyPoints; // Subtract used loyalty points from customer
         customer.currentLoyalPoints -= modifyingLoyaltyPoints; // Subtract current loyalty points from customer

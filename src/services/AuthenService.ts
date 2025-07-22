@@ -18,16 +18,16 @@ const checkPhoneFormat = (phone: string| undefined) => {
 }
 const handleSignup = async (req: any) => {
     if (req.body.role.includes(UserRole.ADMIN)) {
-        throw new Error("Admin cannot signup through this route!!!")
+        throw new Error("Admin không thể đăng ký qua API này");
     }
     const oldUser = await UserRepo.findByUsername(req.body.username);
-    if (oldUser) throw new Error("User already registered!!!")
+    if (oldUser) throw new Error("Người dùng đã được đăng ký")
     const user = await UserRepo.create(req.body);
     return user;
 }
 const getAccessToken = (user: User) => {
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
-    if (!secretKey) throw new Error("Secret key not found!!!")
+    if (!secretKey) throw new Error("Không tìm thấy secret key");
     const accessToken = sign(user, secretKey);
     return {
         accessToken: accessToken
@@ -39,21 +39,21 @@ const handleLogin = async (userInfo: any)=>{
     let user: User | null = null;
     if (checkEmailFormat(userInfo.email)) {
         let customer = await CustomerService.handleGetCustomerByEmail(userInfo.username);
-        if (!customer) throw new Error("Customer not found!!!")
+        if (!customer) throw new Error("Không tìm thấy khách hàng");
         customer.user = customer.user as User;
         user = customer.user;
     } 
     else if (checkPhoneFormat(userInfo.phone)) {
         let customer = await CustomerService.handleGetByPhone(userInfo.username);
-        if (!customer) throw new Error("Customer not found!!!")
+        if (!customer) throw new Error("Không tìm thấy khách hàng");
         customer.user = customer.user as User;
         user = customer.user;
     }
     else user = await UserRepo.findByUsername(userInfo.username);
-    if (!user) throw new Error("User not found!!!")
-    if (!user.password) throw new Error("Password is not set!!!")
+    if (!user) throw new Error("Không tìm thấy người dùng");
+    if (!user.password) throw new Error("Mật khẩu chưa được thiết lập");
     const isMatch = await bcrypt.compare(userInfo.password, user.password);
-    if (!isMatch) throw new Error("Password is incorrect!!!")
+    if (!isMatch) throw new Error("Mật khẩu không chính xác");
     const userData: User = {
         username: user.username,
         role: user.role
@@ -68,7 +68,7 @@ const checkGoogleLogin = async (token: string)=> {
         audience: process.env.CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
     });
     const payload = ticket.getPayload();
-    if (!payload) throw new Error("Invalid Google token");
+    if (!payload) throw new Error("Google token không hợp lệ");
     const userInfo = {
         email: payload.email,
         name: payload.name,
@@ -78,7 +78,7 @@ const checkGoogleLogin = async (token: string)=> {
 }
 const handleGoogleLogin = async (token: string) => {
     const userinfo = await checkGoogleLogin(token);
-    if (!userinfo.email) throw new Error("Email not found in Google token");
+    if (!userinfo.email) throw new Error("Không tìm thấy email trong token Google");
     const existedUser = await UserRepo.findByEmail(userinfo.email);
     let user : User ={}
     if (!existedUser) {
@@ -94,7 +94,7 @@ const handleGoogleLogin = async (token: string) => {
             phone: '', // Phone number is optional for Google login
         }
         const createdUser = await CustomerService.handleCustomerSignUp(newCustomerData, user);
-        if (!createdUser) throw new Error("Failed to create user from Google login");
+        if (!createdUser) throw new Error("Tạo người dùng thất bại trong quá trình đăng nhập Google");
     }
     else{
         user = {

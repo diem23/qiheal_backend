@@ -9,7 +9,7 @@ const getAllSystemSettings = async () => {
     // This function will retrieve all system settings
     const systemSettings = await SystemSettingsRepo.getAll();
     if (!systemSettings) {
-        throw new Error("No system settings found");
+        throw new Error("Không tìm thấy cài đặt hệ thống");
     }
     return systemSettings;
 }
@@ -17,14 +17,14 @@ const getSystemSettingById = async (id: Types.ObjectId) => {
     // This function will retrieve a specific system setting by its ID
     const systemSetting = await SystemSettingsRepo.getById(id);
     if (!systemSetting) {
-        throw new Error("System setting not found");
+        throw new Error("Không tìm thấy cài đặt hệ thống");
     }
     return systemSetting;
 }
 const pointAndMoneyConversion = async (conversionType: ConversionType, money: number =0 , point : number =0  ) => {
     const pointSetting = await SystemSettingsRepo.getByKey(SystemSettingName.POINT_CONVERSION);
     if (!pointSetting) {
-        throw new Error("Point conversion setting not found");
+        throw new Error("Không tìm thấy cài đặt chuyển đổi điểm");
     }
     const pointConversion = pointSetting.value as { pointPerDiscount: number; moneyPerDiscount: number; };
     if (conversionType === ConversionType.POINT_TO_MONEY) {
@@ -34,17 +34,17 @@ const pointAndMoneyConversion = async (conversionType: ConversionType, money: nu
         // Convert money to points
         return Math.floor(money / pointConversion.moneyPerDiscount * pointConversion.pointPerDiscount);
     } else {
-        throw new Error("Invalid conversion type");
+        throw new Error("Loại chuyển đổi không hợp lệ");
     }
 }
 const getSystemSettingByKey = async (key: SystemSettingName): Promise<SystemSettings> => {
     // This function will retrieve a specific system setting by its key
     let systemSetting = await SystemSettingsRepo.getByKey(key);
     if (!systemSetting) {
-        throw new Error(`System setting not found for key: ${key}`);
+        throw new Error(`Không tìm thấy cài đặt hệ thống cho khóa: ${key}`);
     }
     if (!Object.values(SystemSettingName).includes(systemSetting.name as SystemSettingName)) {
-        throw new Error(`Invalid system setting name: ${systemSetting.name}`);
+        throw new Error(`Tên cài đặt hệ thống không hợp lệ: ${systemSetting.name}`);
     }
     let name = systemSetting.name as SystemSettingName // Ensure the name is of type SystemSettingName
     systemSetting.name = name;
@@ -59,7 +59,7 @@ const updateSystemSetting = async (id: Types.ObjectId, systemSetting: SystemSett
     // This function will update an existing system setting by its ID
     const updatedSystemSetting = await SystemSettingsRepo.update(id, systemSetting);
     if (!updatedSystemSetting) {
-        throw new Error("System setting update failed");
+        throw new Error("Cập nhật cài đặt hệ thống thất bại");
     }
     return updatedSystemSetting;
 }

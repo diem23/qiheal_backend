@@ -18,7 +18,7 @@ const create = async (voucher: Voucher) => {
         const newVoucher = await VoucherModel.create(voucher);
         return newVoucher;
     } catch (error) {
-        throw new Error("Failed to create voucher");
+        throw new Error("Tạo voucher thất bại");
     }
 }
 const update = async (id: Types.ObjectId, voucher: any) => {

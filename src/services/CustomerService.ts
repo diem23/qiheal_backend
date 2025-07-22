@@ -10,20 +10,20 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     
     let existingCustomer = await UserService.handleGetUserByUserName(userData.username);
     if (existingCustomer) {
-        throw new Error("Username already exists"); 
+        throw new Error("Tên đang nhập đã tồn tại"); 
     }
     if (customerData.email) existingCustomer = await CustomerRepo.findByUserEmail(customerData.email);
     if (existingCustomer) {
-        throw new Error("Email already exists");
+        throw new Error("Email đã tồn tại");
     }
     if (customerData.phone) existingCustomer = await CustomerRepo.getByPhone(customerData.phone);
     if (existingCustomer) {
-        throw new Error("Phone number already exists");
+        throw new Error("Số điện thoại đã tồn tại");
     }   
     const user = await UserService.handleCreateUser(userData);
 
     if (!user) {
-        throw new Error("User creation failed");
+        throw new Error("Tạo người dùng thất bại");
     }
     try {
         customerData.user = user._id; // Assuming user._id is the ID of the created user
@@ -34,7 +34,7 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
         const newCart = await CartService.handleCreateCart(cart);
         try {
             if (!newCart) { 
-                throw new Error("Cart creation failed");
+                throw new Error("Tạo giỏ hàng thất bại");
             }
             customerData.cartId = newCart._id; // Assuming newCart._id is the ID of the created cart
             const newCustomer = await handleCreateCustomer(customerData);
@@ -59,7 +59,7 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
 const handleCreateCustomer = async (customerData: Customer) => {
     const newCustomer = await CustomerRepo.create(customerData);
     if (!newCustomer) {
-        throw new Error("Customer creation failed");
+        throw new Error("Tạo khách hàng thất bại");
     }
     return newCustomer;
 }
@@ -70,47 +70,47 @@ const handleGetCustomers = async () => {
 const handleGetCustomerById = async (customerId: Types.ObjectId) => {
     const customer = await CustomerRepo.findById(customerId);
     if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error("Không tìm thấy khách hàng");
     }
     return customer;
 }
 const handleGetCustomerByEmail = async (email: string) => {
     const customer = await CustomerRepo.findByUserEmail(email);
     if (!customer) {
-        throw new Error("Customer not found with this email");
+        throw new Error("Không tìm thấy khách hàng với email này");
     }
     return customer;
 }
 const handleGetCustomerByUserId = async (userId: Types.ObjectId) => {
     const customer = await CustomerRepo.findByUserId(userId);
     if (!customer) {
-        throw new Error("Customer not found for this user");
+        throw new Error("Không tìm thấy khách hàng cho người dùng này");
     }
     return customer;
 }
 const handleUpdateCustomer = async (customerId: Types.ObjectId, customerData: Customer) => {
     const updatedCustomer = await CustomerRepo.update(customerId, customerData);
     if (!updatedCustomer) {
-        throw new Error("Customer update failed");
+        throw new Error("Cập nhật khách hàng thất bại");
     }
     return updatedCustomer;
 }
 const handleDeleteCustomer = async (customerId: Types.ObjectId) => {
     const customer = await CustomerRepo.findById(customerId);
     if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error("Không tìm thấy khách hàng");
     }
     if (customer.cartId) CartService.handleDeleteCart(customer.cartId); // Assuming the cart ID is the same as customer ID
     const deletedCustomer = await CustomerRepo.del(customerId);
     if (!deletedCustomer) {
-        throw new Error("Customer deletion failed");
+        throw new Error("Xóa khách hàng thất bại");
     }
     return deletedCustomer;
 }
 const handleGetByPhone = async (phone: string) => {
     const customer = await CustomerRepo.getByPhone(phone);
     if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error("Không tìm thấy khách hàng");
     }
     return customer;
 }

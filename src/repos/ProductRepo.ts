@@ -37,7 +37,7 @@ const create = async (
     const newProduct = await ProductModel.create(product)
     return newProduct
 } catch (error) {
-    throw new Error("Failed to create product");
+    throw new Error("Tạo sản phẩm thất bại");
 
 }
 }
@@ -79,7 +79,7 @@ const updateImages = async (id: Types.ObjectId, files: string[]) => {
 const chooseRelatedProducts = async (productId: Types.ObjectId, relatedProductIds: Types.ObjectId[]) => {
     let currentProduct = await ProductModel.findById(productId).exec()
     if (!currentProduct) {
-        throw new Error("Product not found")
+        throw new Error("Không tìm thấy sản phẩm")
     }
     currentProduct.relatedProduct = relatedProductIds
     

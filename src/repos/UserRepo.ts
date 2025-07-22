@@ -22,14 +22,14 @@ const del = async (id: string) => {
 const create = async (user: User)=> {
     try{
         if (!user.username || !user.password) {
-            throw new Error('Username and password are required!');
+            throw new Error('Cần có tên đăng nhập và mật khẩu!');
         }
         user.password = await bcrypt.hash(user.password,10)
         const newUser = UserModel.create(user)
         return newUser
     }
     catch (err){
-        throw new Error('Failed to create user!!!')
+        throw new Error('Tạo người dùng thất bại');
     }
 }
 const findByEmail = async (email: string) => {
