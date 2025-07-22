@@ -4,7 +4,7 @@ import { OrderModel } from "../model/Order";
 
 const getAll = async () => {
     // This function will retrieve all orders from the database
-    const orders = await OrderModel.find().sort({createdAt: -1}).populate('customer').where('isActive', true).exec();
+    const orders = await OrderModel.find().sort({createdAt: -1}).populate('customer').populate('status').where('isActive', true).exec();
     return orders;
 }
 const getById = async (id: Types.ObjectId) => {

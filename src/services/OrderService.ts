@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import { OrderData } from "../Types/Order.props";
 import { OrderRepo } from "../repos/OrderRepo";
-import { CustomerService } from "./CustomerService";
 import Product from "../model/Product";
 import Customer from "../model/Customer";
 import CustomerLevel from "../model/CustomerLevel";
@@ -14,6 +13,7 @@ import ProductService from "./ProductService";
 import { UpdateType } from "../Types/UpdateType.prop";
 import VoucherService from "./VoucherService";
 import { ConversionType, SystemSettingsService } from "./SystemSettingsService";
+import { CustomerRepo } from "../repos/CustomerRepo";
 const calTotalPrice = async (orderId: Types.ObjectId) => {
     const order = await OrderRepo.getById(orderId); // Retrieve the order by ID
     if (!order) {
@@ -37,7 +37,7 @@ const handleCreateOrder = async (orderData: Order ) => {
     // This function will handle the creation of a new order
     // It should validate the order data and then call the repository to create the order
     let customer: Customer | null = null;
-    customer = await CustomerService.handleGetCustomerById(orderData.customer as Types.ObjectId);
+    customer = await CustomerRepo.findById(orderData.customer as Types.ObjectId);
     if (!orderData.phone){
         if (!customer) {
             throw new Error("Phone or customer ID is required to create an order");
