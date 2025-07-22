@@ -10,13 +10,13 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     
     let existingCustomer = await UserService.handleGetUserByUserName(userData.username);
     if (existingCustomer) {
-        throw new Error("Username already exists");
+        throw new Error("Username already exists"); 
     }
-    if (customerData.email) existingCustomer = await CustomerService.handleGetCustomerByEmail(customerData.email);
+    if (customerData.email) existingCustomer = await CustomerRepo.findByUserEmail(customerData.email);
     if (existingCustomer) {
         throw new Error("Email already exists");
     }
-    if (customerData.phone) existingCustomer = await CustomerService.handleGetByPhone(customerData.phone);
+    if (customerData.phone) existingCustomer = await CustomerRepo.getByPhone(customerData.phone);
     if (existingCustomer) {
         throw new Error("Phone number already exists");
     }   
