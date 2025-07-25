@@ -38,7 +38,7 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
             }
             customerData.cartId = newCart._id; // Assuming newCart._id is the ID of the created cart
             const newCustomer = await handleCreateCustomer(customerData);
-            return newCustomer;
+            return { userId: user._id, customerId: newCustomer._id };
         }
         catch (error) {
             if (newCart) {

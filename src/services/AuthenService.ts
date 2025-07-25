@@ -5,7 +5,7 @@ import User, { UserRole } from '../model/User';
 import { CustomerService } from './CustomerService';
 import { OAuth2Client } from 'google-auth-library';
 import Customer from '../model/Customer';
-import { get } from 'mongoose';
+import { get, Types } from 'mongoose';
 const checkEmailFormat = (email: string|undefined) => {
     if (!email) return false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,7 +25,7 @@ const handleSignup = async (req: any) => {
     const user = await UserRepo.create(req.body);
     return user;
 }
-const getAccessToken = (user: User) => {
+const getAccessToken = (user: any) => {
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
     if (!secretKey) throw new Error("Không tìm thấy secret key");
     const accessToken = sign(user, secretKey);
@@ -37,14 +37,15 @@ const getAccessToken = (user: User) => {
 const handleLogin = async (userInfo: any)=>{
     console.log("userInfo: ", userInfo.username);
     let user: User | null = null;
+    let customer: Customer | null = null;
     if (checkEmailFormat(userInfo.email)) {
-        let customer = await CustomerService.handleGetCustomerByEmail(userInfo.username);
+        customer = await CustomerService.handleGetCustomerByEmail(userInfo.username);
         if (!customer) throw new Error("Không tìm thấy khách hàng");
         customer.user = customer.user as User;
         user = customer.user;
     } 
     else if (checkPhoneFormat(userInfo.phone)) {
-        let customer = await CustomerService.handleGetByPhone(userInfo.username);
+        customer = await CustomerService.handleGetByPhone(userInfo.username);
         if (!customer) throw new Error("Không tìm thấy khách hàng");
         customer.user = customer.user as User;
         user = customer.user;
@@ -54,7 +55,13 @@ const handleLogin = async (userInfo: any)=>{
     if (!user.password) throw new Error("Mật khẩu chưa được thiết lập");
     const isMatch = await bcrypt.compare(userInfo.password, user.password);
     if (!isMatch) throw new Error("Mật khẩu không chính xác");
-    const userData: User = {
+    if (!customer){
+        customer = await CustomerService.handleGetCustomerByUserId(user._id as Types.ObjectId);
+        if (!customer) throw new Error("Không tìm thấy khách hàng cho người dùng này");
+    }
+    const userData = {
+        userId: user._id as Types.ObjectId,
+        customerId: customer._id as Types.ObjectId,
         username: user.username,
         role: user.role
     }
