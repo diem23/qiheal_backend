@@ -12,7 +12,7 @@ UserRoute.get('/', async (req, res) => {
         data: response,
     });
 });
-UserRoute.get('/:id', verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req, res) => {
+UserRoute.get('/:id',  async (req, res) => {
     const response = await UserService.handleGetUserById(req);
     if (!response) {
         return res.status(404).json({ message: 'User not found' });
