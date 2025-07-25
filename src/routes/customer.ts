@@ -15,7 +15,7 @@ CustomerRouter.get("/",verifyRoles(UserRole.ADMIN), async (req, res) => {
         data: response,
     });
 });
-CustomerRouter.get("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
+CustomerRouter.get("/:id", async (req, res) => {
     // #swagger.tags = ['Customer']
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
