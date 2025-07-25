@@ -87,9 +87,9 @@ const handleGoogleLogin = async (token: string) => {
     const userinfo = await checkGoogleLogin(token);
     if (!userinfo.email) throw new Error("Không tìm thấy email trong token Google");
     const existedUser = await UserRepo.findByEmail(userinfo.email);
-    let user : User ={}
+    let userToken = {}
     if (!existedUser) {
-        user = {
+        const user = {
             username: userinfo.email,
             password: '', // Google login does not require a password
             profilePic: userinfo.picture || '',
@@ -102,16 +102,25 @@ const handleGoogleLogin = async (token: string) => {
         }
         const createdUser = await CustomerService.handleCustomerSignUp(newCustomerData, user);
         if (!createdUser) throw new Error("Tạo người dùng thất bại trong quá trình đăng nhập Google");
-    }
-    else{
-        user = {
+    
+        userToken = {
+            userId: createdUser.userId,
+            customerId: createdUser.customerId,
+            username: user.username,
+            role: user.role,
+        }
+    } else {
+        const customer = await CustomerService.handleGetCustomerByUserId(existedUser._id as Types.ObjectId);
+        userToken = {
+            userId: existedUser._id as Types.ObjectId,
+            customerId: customer._id as Types.ObjectId,
             username: existedUser.username,
             role: existedUser.role,
             profilePic: existedUser.profilePic || '',
         };
     }
-    const userToken = await getAccessToken(user);
-    return userToken;
+    
+    return await getAccessToken(userToken);
 }
 export default{
     handleSignup,
