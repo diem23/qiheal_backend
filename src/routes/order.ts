@@ -89,7 +89,7 @@ OrderRouter.post('/cancle',  async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
         res.status(200).json({
-            message: 'Order approved successfully',
+            message: 'Order cancelled successfully',
             data: response,
         });
     }
