@@ -89,7 +89,7 @@ const handleGoogleLogin = async (token: string) => {
     const userinfo = await checkGoogleLogin(token);
     console.log("after checking Google login");
     if (!userinfo.email) throw new Error("Không tìm thấy email trong token Google");
-    const existedUser = await UserRepo.findByEmail(userinfo.email);
+    const existedUser = await UserRepo.findByUsername(userinfo.email);
     let userToken = {}
     if (!existedUser) {
         const user: User= {
