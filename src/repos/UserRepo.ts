@@ -20,17 +20,15 @@ const del = async (id: string) => {
     return deletedUser
 }
 const create = async (user: User)=> {
-    try{
-        if (!user.username || !user.password) {
-            throw new Error('Cần có tên đăng nhập và mật khẩu!');
+        if (!user.username ) {
+            throw new Error('Cần có tên đăng nhập!');
         }
-        user.password = await bcrypt.hash(user.password,10)
+        if (user.password) {
+            user.password = await bcrypt.hash(user.password, 10)
+        }
         const newUser = UserModel.create(user)
         return newUser
-    }
-    catch (err){
-        throw new Error(user.username + ' không thể tạo người dùng');
-    }
+    
 }
 const findByEmail = async (email: string) => {
     return UserModel.findOne({ email: email }).lean().exec();
