@@ -116,7 +116,7 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
     if (!nextStatus) {
         throw new Error("Không tìm thấy trạng thái đơn hàng tiếp theo");
     }
-    if (nextStatus?.status == OrderStatusName.PACKAGING && order.customer) {
+    if (nextStatus?.status == OrderStatusName.PACKAGING ) {
         await handleConfirmOrder(order); // Handle confirm order if status is packaging
     }
     order.status = nextStatus; // Update order status to the next status
@@ -150,8 +150,10 @@ const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
 const handleConfirmOrder = async (order: Order) => {
     // Check to update used loyalty points of customer
     let customer : Customer | null = null;
-    order.customer = order.customer as Customer; // Ensure customer is of type Customer
-    CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, 0, order.totalPrice ); // Update loyalty points of customer
+    if (order.customer) {
+        order.customer = order.customer as Customer; // Ensure customer is of type Customer
+        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, 0, order.totalPrice ); // Update loyalty points of customer
+    }
     // if (order.customer.usedLoyalPoints && order.customer.usedLoyalPoints > 0) {
     //     const customerId = order.customer._id as Types.ObjectId; // Ensure customer ID is of type ObjectId
     //     order.customer.usedLoyalPoints += order.usedLoyalPoints ? order.usedLoyalPoints : 0; // Add used loyalty points to customer
@@ -185,12 +187,14 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     if ( order.status.status == OrderStatusName.DELIVERING) {
         throw new Error ("Không thể hủy đơn hàng đang giao");
     }
-    order.customer = order.customer as Customer; // Ensure customer is of type Customer
-    // refund current loyalty points to customer
-    CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, order.usedLoyalPoints, 0); // Refund loyalty points to customer
+    if (order.customer){
+        order.customer = order.customer as Customer; // Ensure customer is of type Customer
+        // refund current loyalty points to customer
+        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, order.usedLoyalPoints, 0); // Refund loyalty points to customer
+    }
     // Case where the order is not pending, we need to refund loyalty points if used
     if (order.status.status !== OrderStatusName.PENDING) {
-        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE, 0, order.totalPrice); // Refund loyalty points to customer
+        if (order.customer) CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE, 0, order.totalPrice); // Refund loyalty points to customer
         // XỬ LÝ CỘNG HÀNG TỒN KHO
         for (const item of order.products) {
             item.product = item.product as Product; // Ensure item.product is of type Product
