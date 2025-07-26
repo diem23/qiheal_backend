@@ -85,12 +85,14 @@ const checkGoogleLogin = async (token: string)=> {
     return userInfo;
 }
 const handleGoogleLogin = async (token: string) => {
+    console.log("start checking Google login");
     const userinfo = await checkGoogleLogin(token);
+    console.log("after checking Google login");
     if (!userinfo.email) throw new Error("Không tìm thấy email trong token Google");
     const existedUser = await UserRepo.findByEmail(userinfo.email);
     let userToken = {}
     if (!existedUser) {
-        const user = {
+        const user: User= {
             username: userinfo.email,
             password: '', // Google login does not require a password
             profilePic: userinfo.picture || '',

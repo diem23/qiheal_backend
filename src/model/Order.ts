@@ -14,6 +14,7 @@ export default interface Order {
     usedLoyalPoints?: number // Optional, if the customer uses loyal points
     collaborator?: Types.ObjectId // Optional, if the order is handled by a collaborator
     totalPrice: number
+    fullname?: string
     phone?: string // Optional, if the customer provides a phone number
     province?: string // Optional, if the order is shipped to a specific province
     district?: string // Optional, if the order is shipped to a specific district
@@ -37,6 +38,8 @@ const schema = new Schema<Order>({
     totalPrice: {type: Schema.Types.Number, required: true, default: 0},
     province: {type: Schema.Types.String, required: false},
     district: {type: Schema.Types.String, required: false},
+    phone: {type: Schema.Types.String, required: false},
+    fullname: {type: Schema.Types.String, required: false},
     ward: {type: Schema.Types.String, required: false},
     address: {type: Schema.Types.String, required: false},
     note: {type: Schema.Types.String, required: false},

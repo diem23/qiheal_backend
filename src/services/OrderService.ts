@@ -55,7 +55,7 @@ const handleCreateOrder = async (orderData: Order ) => {
 
     const firstStatus = await OrderStatusService.handleGetfirstStatus(); // Get the first status for the order
     orderData.status = firstStatus._id; // Set the order status to the first status
-    
+    console.log("orderData: ", orderData);
     //Create order first to get the order ID => use the reference in the products
     let newOrder= await OrderRepo.create(orderData);
     if (!newOrder) {

@@ -95,6 +95,7 @@ GuestRouter.post('/order',async (req, res) => {
                 $collaborator: "645b1f2e8f1b2c001c8e4d3d",
                 $totalPrice: 250.00,
                 $phone: "1234567890",
+                $fullname: "John Doe",
                 $province: "Hanoi",
                 $district: "Hoan Kiem",
                 $ward: "Cua Dong",
