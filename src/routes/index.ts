@@ -40,7 +40,7 @@ router.use('/posts', jwtVerify, verifyRoles(UserRole.ADMIN), PostRouter
             "apiKeyAuth": []
     }] */
 );
-router.use('/users', jwtVerify,verifyRoles(UserRole.ADMIN), UserRoute
+router.use('/users', jwtVerify, UserRoute
     // #swagger.tags = ['User']
     /* #swagger.security = [{
             "apiKeyAuth": []
