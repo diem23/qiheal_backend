@@ -29,7 +29,7 @@ const create = async (user: User)=> {
         return newUser
     }
     catch (err){
-        throw new Error('Tạo người dùng thất bại');
+        throw new Error(user.username + ' không thể tạo người dùng');
     }
 }
 const findByEmail = async (email: string) => {
