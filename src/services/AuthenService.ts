@@ -38,6 +38,7 @@ const handleLogin = async (userInfo: any)=>{
     console.log("userInfo: ", userInfo.username);
     let user: User | null = null;
     let customer: Customer | null = null;
+    console.log("userInfo: ", userInfo);
     if (checkEmailFormat(userInfo.email)) {
         customer = await CustomerService.handleGetCustomerByEmail(userInfo.username);
         if (!customer) throw new Error("Không tìm thấy khách hàng");
@@ -55,13 +56,13 @@ const handleLogin = async (userInfo: any)=>{
     if (!user.password) throw new Error("Mật khẩu chưa được thiết lập");
     const isMatch = await bcrypt.compare(userInfo.password, user.password);
     if (!isMatch) throw new Error("Mật khẩu không chính xác");
-    if (!customer){
+    if (!customer && user.role?.includes(UserRole.CUSTOMER)) {
         customer = await CustomerService.handleGetCustomerByUserId(user._id as Types.ObjectId);
         if (!customer) throw new Error("Không tìm thấy khách hàng cho người dùng này");
     }
     const userData = {
         userId: user._id as Types.ObjectId,
-        customerId: customer._id as Types.ObjectId,
+        customerId: customer?._id as Types.ObjectId || undefined,
         username: user.username,
         role: user.role
     }
