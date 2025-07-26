@@ -46,7 +46,7 @@ router.use('/users', jwtVerify, UserRoute
             "apiKeyAuth": []
     }] */
 );
-router.use('/customers', jwtVerify, verifyRoles(UserRole.ADMIN), CustomerRouter
+router.use('/customers', jwtVerify, CustomerRouter
     // #swagger.tags = ['Customer']
     /* #swagger.security = [{
             "apiKeyAuth": []
