@@ -29,7 +29,7 @@ CustomerRouter.get("/:id", async (req, res) => {
     }
     res.status(200).json(response);
 });
-CustomerRouter.put("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
+CustomerRouter.put("/:id", async (req, res) => {
     // #swagger.tags = ['Customer']
     /* #swagger.parameters['body'] = {
             in: 'body',

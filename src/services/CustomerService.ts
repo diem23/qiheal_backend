@@ -23,7 +23,7 @@ const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     const user = await UserService.handleCreateUser(userData);
 
     if (!user) {
-        throw new Error("Tạo người dùng thất bại");
+        throw new Error(userData.username + " không thể tạo người dùng");
     }
     try {
         customerData.user = user._id; // Assuming user._id is the ID of the created user
