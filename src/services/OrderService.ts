@@ -105,6 +105,14 @@ const handleGetOrderById = async (orderId: Types.ObjectId) => {
     }
     return order;
 }
+const handleGetOrdersByCustomerId = async (customerId: Types.ObjectId) => {
+    // This function will retrieve all orders for a specific customer by their ID
+    const orders = await OrderRepo.getByCustomerId(customerId);
+    if (!orders || orders.length === 0) {
+        throw new Error("Không tìm thấy đơn hàng cho khách hàng này");
+    }
+    return orders;
+}
 const handleApproveOrder = async (orderId: Types.ObjectId) => {
     // This function will approve an order by its ID
     let order = await OrderRepo.getById(orderId);
@@ -220,6 +228,7 @@ const handleDeleteOrder = async (orderId: Types.ObjectId) => {
 }
 export const OrderService = {
     handleCreateOrder,
+    handleGetOrdersByCustomerId,
     handleGetOrders,
     handleGetOrderById,
     handleApproveOrder,
