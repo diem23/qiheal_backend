@@ -101,7 +101,6 @@ const handleGoogleLogin = async (token: string) => {
         const newCustomerData: Customer = {
             fullname: userinfo.name || '',
             email: userinfo.email,
-            phone: '', // Phone number is optional for Google login
         }
         const createdUser = await CustomerService.handleCustomerSignUp(newCustomerData, user);
         if (!createdUser) throw new Error("Tạo người dùng thất bại trong quá trình đăng nhập Google");
