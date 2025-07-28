@@ -1,3 +1,4 @@
+
 const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
@@ -9,10 +10,11 @@ const doc = {
   servers: [
     {
       url: '/api', // The base path for your API
-    },
+    }
   ],
-  schemes:['https'], // Use 'http' or 'https' based on your API
-  host: 'qiheal-backend.onrender.com', // The host of your API
+  //schemes:['https'], // Use 'http' or 'https' based on your API
+  //host: 'qiheal-backend.onrender.com', // The host of your API
+  host: 'https://skhh.vn/api', // The host of your API
   tags:[
     {
         name: 'Authen',
@@ -61,6 +63,10 @@ const doc = {
     {
         name: 'Contact',
         description: 'Contact related endpoints',
+    },
+    {
+        name: 'Voucher',
+        description: 'Voucher related endpoints',
     }
   ],
 //   components: {

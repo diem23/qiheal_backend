@@ -35,7 +35,7 @@ const del = async (id: Types.ObjectId) => {
 }   
 const getByCustomerId = async (customerId: Types.ObjectId) => {
     // This function will retrieve all orders for a specific customer
-    const orders = await OrderModel.find({ customer: customerId }).populate('customer').exec();
+    const orders = await OrderModel.find({ customer: customerId }).populate('status').populate('customer').exec();
     return orders;
 }
 const getByCollaboratorId = async (collaboratorId: Types.ObjectId) => {
