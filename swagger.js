@@ -14,7 +14,7 @@ const doc = {
   ],
   //schemes:['https'], // Use 'http' or 'https' based on your API
   //host: 'qiheal-backend.onrender.com', // The host of your API
-  host: 'https://skhh.vn/api', // The host of your API
+  host: 'https://skhh.vn', // The host of your API
   tags:[
     {
         name: 'Authen',
