@@ -22,6 +22,7 @@ export default interface Order {
     address?: string // Optional, if the order is shipped to a specific address
     note?: string // Optional, if the customer adds a note to the order
     voucher?: Types.ObjectId | Voucher
+    email?: string // Optional, if the customer provides an email address
     status: Types.ObjectId | OrderStatus // e.g., 'pending', 'completed', 'cancelled'
     isActive?: boolean
 }
@@ -33,6 +34,7 @@ const schema = new Schema<Order>({
         product: {type: Schema.Types.ObjectId, ref: "Products", required: true},
         quantity: {type: Schema.Types.Number, required: true, default: 1}
     }],
+    email: {type: Schema.Types.String, required: false},
     usedLoyalPoints: {type: Schema.Types.Number, required: false, default: 0},
     collaborator: {type: Schema.Types.ObjectId, ref: "Collaborators", required: false},
     totalPrice: {type: Schema.Types.Number, required: true, default: 0},
