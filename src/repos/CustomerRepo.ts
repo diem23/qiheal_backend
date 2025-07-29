@@ -2,8 +2,12 @@ import { Types } from "mongoose";
 import Customer, { CustomerModel } from "../model/Customer";
 
 const create = async (customer: Customer) => {
-    const newCustomer = await CustomerModel.create(customer);
-    return newCustomer;
+    try{
+        const newCustomer = await CustomerModel.create(customer);
+        return newCustomer;
+    }catch (error) {
+        throw new Error("Error creating customer" + customer.email + " " + customer.fullname + " " + error);
+    }
 }
 const findById = async (id: Types.ObjectId) => {
     const customer = await CustomerModel.findById(id).populate("user").populate("levelId").populate("cartId");
