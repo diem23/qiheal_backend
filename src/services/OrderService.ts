@@ -23,7 +23,9 @@ const calTotalPrice = async (orderId: Types.ObjectId) => {
         item.product = item.product as Product; // Ensure item.product is of type Product
         return total + (item.product.actualPrice ? item.product.actualPrice : 0) * item.quantity;
     }, 0);
-    totalPrice -= order.usedLoyalPoints ? await SystemSettingsService.pointAndMoneyConversion(ConversionType.POINT_TO_MONEY, 0, order.usedLoyalPoints) : 0; // Deduct used loyalty points if any
+    let reducedMoney = order.usedLoyalPoints ? await SystemSettingsService.pointAndMoneyConversion(ConversionType.POINT_TO_MONEY, 0, order.usedLoyalPoints) : 0; // Convert loyalty points to money if used
+    totalPrice -= reducedMoney; // Deduct used loyalty points if any
+    console.log("order.usedLoyalPoints: ", order.usedLoyalPoints, "reducedMoney: ", reducedMoney, "totalPrice: ", totalPrice);
     if (order.customer) {
         order.customer = order.customer as Customer;
         if (order.customer.levelId) {
@@ -31,6 +33,7 @@ const calTotalPrice = async (orderId: Types.ObjectId) => {
             totalPrice -= totalPrice * order.customer.levelId.discountPercent; // Apply customer level discount if any
         }
     }
+    if (totalPrice < 0) totalPrice = 0; // Ensure total price is not negative
     return totalPrice;
 }
 const handleCreateOrder = async (orderData: Order ) => {
@@ -64,10 +67,13 @@ const handleCreateOrder = async (orderData: Order ) => {
     try{
         // Calculate total price
         newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
+        console.log("newOrder1.totalPrice: ", newOrder?.totalPrice);
         if (newOrder.totalPrice < 300000) newOrder.totalPrice += 20000; // Add shipping fee if total price is less than 300000
+        console.log("newOrder2.totalPrice: ", newOrder?.totalPrice);
         // Apply voucher if provided after calculating total price
         if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
         const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
+        console.log("updatedOrder.totalPrice: ", updatedOrder?.totalPrice);
         return updatedOrder;
     }
     catch (error) {
