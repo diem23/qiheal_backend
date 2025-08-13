@@ -4,6 +4,7 @@ import PostService from '../services/PostService';
 import ProductService from '../services/ProductService';
 import { OrderService } from '../services/OrderService';
 import { ContactService } from '../services/ContactService';
+import sendMail from '../helper/sendMail';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -107,6 +108,19 @@ GuestRouter.post('/order',async (req, res) => {
         */
     try {
     const response = await OrderService.handleCreateOrder(req.body);
+    await OrderService.handleSendMailAfterOrder( 'tuvanskhhvn@gmail.com', 'New Order Created', 
+        {
+            fullname: response?.fullname,
+            orderCode: response?._id.toString(),
+            totalPrice: response?.totalPrice,
+            email: response?.email,
+            phone: response?.phone,
+            province: response?.province,
+            district: response?.district,
+            ward: response?.ward,
+            address: response?.address,
+            orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+        });
     res.status(201).json({
         message: 'Order created successfully',
         data: response,
