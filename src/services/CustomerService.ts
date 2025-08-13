@@ -5,6 +5,7 @@ import User from "../model/User";
 import { CustomerRepo } from "../repos/CustomerRepo";
 import { CartService } from "./CartService";
 import UserService from "./UserService";
+import { CustomerLevelService } from "./CustomerLevel";
 
 const handleCustomerSignUp = async (customerData: Customer, userData: User) => {
     
@@ -89,6 +90,12 @@ const handleGetCustomerByUserId = async (userId: Types.ObjectId) => {
     return customer;
 }
 const handleUpdateCustomer = async (customerId: Types.ObjectId, customerData: Customer) => {
+    // Update customer level based on usedLoyalPoints
+    const newCustomerLevel = customerData.usedLoyalPoints ? await CustomerLevelService.handleGetByThreshold(customerData.usedLoyalPoints) : null;
+    if (newCustomerLevel) {
+        customerData.levelId = newCustomerLevel._id; // Update customer level if applicable
+    }
+
     const updatedCustomer = await CustomerRepo.update(customerId, customerData);
     if (!updatedCustomer) {
         throw new Error("Cập nhật khách hàng thất bại");
