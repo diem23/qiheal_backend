@@ -28,7 +28,10 @@ const getById = async (id: Types.ObjectId): Promise<Product|null> => {
     const product = await ProductModel.findById(id).lean().exec()
     return product
 }
-
+const getBySlug = async (slug: string): Promise<Product|null> => {
+    const product = await ProductModel.findOne({ slug }).lean().exec()
+    return product
+}
 const create = async (
     product: Product,
 )  => {
@@ -94,6 +97,7 @@ const ProductRepo = {
     update,
     del,
     updateImages,
-    chooseRelatedProducts
+    chooseRelatedProducts,
+    getBySlug
 }
 export default ProductRepo

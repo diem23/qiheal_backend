@@ -97,7 +97,13 @@ const handleChooseRelatedProducts = async (productId: Types.ObjectId, relatedPro
     const product = ProductRepo.chooseRelatedProducts(productId, relatedProductIds)
     return product;
 }
+const handleGetProductBySlug = async (req: any) => {
+    const productSlug = req.params.slug;
+    const product = await ProductRepo.getBySlug(productSlug);
+    return product;
+}
 const ProductService = {
+    handleGetProductBySlug,
     handleSearch,
     handleUpdateProductStock,
     handleGetProductsByListOfIds,

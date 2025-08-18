@@ -77,9 +77,17 @@ GuestRouter.get('/product/', async(req,  res) => {
 GuestRouter.get('/product/:id', async (req, res) => {
     const reponse = await ProductService.handleGetProductById(req)
     if (!reponse) {
-        return res.status(404).json({ message: 'Product not found' });
+        return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
     }
     res.status(200).send(reponse)
+});
+GuestRouter.get('/product/slug/:slug', async (req, res) => {
+    const response = await ProductService.handleGetProductBySlug(req)
+    console.log(response);
+    if (!response) {
+        return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+    res.status(200).send(response)
 });
 // Create a new order
 GuestRouter.post('/order',async (req, res) => {
