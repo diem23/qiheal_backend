@@ -37,6 +37,20 @@ VoucherRouter.get('/:id',   async (req, res) => {
         });
     }
 });
+VoucherRouter.get('/:code',   async (req, res) => {
+    try {
+        const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
+        if (!voucher) {
+            return res.status(404).json({ message: 'Voucher not found' });
+        }
+        res.status(200).json(voucher);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
 VoucherRouter.post('/',   async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
