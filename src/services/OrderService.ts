@@ -169,7 +169,7 @@ const handleSendMailAfterOrder = async (to: string, subject: string, emailInfo: 
 `
 await sendMail(to, subject, html);
 }
-const handleCreateOrder = async (orderData: Order ) => {
+const handleCreateOrder = async (orderData: Order, voucherCode: string ) => {
     // This function will handle the creation of a new order
     // It should validate the order data and then call the repository to create the order
     let customer: Customer | null = null;
@@ -204,7 +204,7 @@ const handleCreateOrder = async (orderData: Order ) => {
         if (newOrder.totalPrice < 300000) newOrder.totalPrice += 20000; // Add shipping fee if total price is less than 300000
         console.log("newOrder2.totalPrice: ", newOrder?.totalPrice);
         // Apply voucher if provided after calculating total price
-        if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, newOrder.voucher as Types.ObjectId); // Apply voucher if provided
+        if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, voucherCode ); // Apply voucher if provided
         const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
         console.log("updatedOrder.totalPrice: ", updatedOrder?.totalPrice);
         return updatedOrder;
@@ -274,8 +274,9 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
     return updatedOrder;
 }
 // This function will apply a voucher to an order and mark it as used
-const handleApplyVoucher = async (order: Order, voucherId: Types.ObjectId) => {
-    const voucher = await VoucherService.handleGetVoucherById(voucherId); // Get voucher by code
+const handleApplyVoucher = async (order: Order, voucherCode: string) => {
+    const voucher = await VoucherService.handleGetVoucherByCode(voucherCode); // Get voucher by code
+    order.voucher = voucher._id as Types.ObjectId; // Set voucher ID to the order
     if (!voucher) {
         throw new Error("Không tìm thấy voucher");
     }
