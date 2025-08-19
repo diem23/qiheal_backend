@@ -180,11 +180,12 @@ const handleCreateOrder = async (orderData: Order, voucherCode: string ) => {
         }
         orderData.phone = customer.phone as string; // Use customer's phone if not provided
     }
+    // Don't allow customer to apply loyalty points for order (currently)
     // Check to minus current loyalty points of customer
-    if (customer){
-        CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
+    // if (customer){
+    //     CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.DECREASE, orderData.usedLoyalPoints , 0); // Update loyalty points of customer
 
-    }
+    // }
 
     
     
@@ -200,20 +201,20 @@ const handleCreateOrder = async (orderData: Order, voucherCode: string ) => {
     try{
         // Calculate total price
         newOrder.totalPrice = await calTotalPrice(newOrder.id as Types.ObjectId); // Calculate total price of the order
-        console.log("newOrder1.totalPrice: ", newOrder?.totalPrice);
+        //console.log("newOrder1.totalPrice: ", newOrder?.totalPrice);
         if (newOrder.totalPrice < 300000) newOrder.totalPrice += 20000; // Add shipping fee if total price is less than 300000
-        console.log("newOrder2.totalPrice: ", newOrder?.totalPrice);
+        //console.log("newOrder2.totalPrice: ", newOrder?.totalPrice);
         // Apply voucher if provided after calculating total price
         if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, voucherCode ); // Apply voucher if provided
         const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
-        console.log("updatedOrder.totalPrice: ", updatedOrder?.totalPrice);
+        //console.log("updatedOrder.totalPrice: ", updatedOrder?.totalPrice);
         return updatedOrder;
     }
     catch (error) {
         // If there is an error, we need to cancel the order and refund loyalty points
-        if (customer) {
-            CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.INCREASE, orderData.usedLoyalPoints, 0); // Refund loyalty points to customer
-        }
+        // if (customer) {
+        //     CustomerLevelService.handleUpdateLoyaltyPoints(customer, UpdateType.INCREASE, orderData.usedLoyalPoints, 0); // Refund loyalty points to customer
+        // }
         await OrderRepo.del(newOrder._id as Types.ObjectId); // Delete the order if creation failed
         throw error; // Re-throw the error to be handled by the caller
     }
@@ -300,7 +301,7 @@ const handleConfirmOrder = async (order: Order) => {
     let customer : Customer | null = null;
     if (order.customer) {
         order.customer = order.customer as Customer; // Ensure customer is of type Customer
-        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, 0, order.totalPrice ); // Update loyalty points of customer
+        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE,  order.totalPrice ); // Update loyalty points of customer
     }
     // if (order.customer.usedLoyalPoints && order.customer.usedLoyalPoints > 0) {
     //     const customerId = order.customer._id as Types.ObjectId; // Ensure customer ID is of type ObjectId
@@ -324,7 +325,6 @@ const handleConfirmOrder = async (order: Order) => {
 const handleCancelOrder = async (orderId: Types.ObjectId) => {
     // This function will cancel an order by its ID
     let order = await OrderRepo.getById(orderId);
-    let customer : Customer | null = null;
     if (!order) {
         throw new Error("Không tìm thấy đơn hàng");
     }
@@ -335,14 +335,14 @@ const handleCancelOrder = async (orderId: Types.ObjectId) => {
     if ( order.status.status == OrderStatusName.DELIVERING) {
         throw new Error ("Không thể hủy đơn hàng đang giao");
     }
-    if (order.customer){
-        order.customer = order.customer as Customer; // Ensure customer is of type Customer
-        // refund current loyalty points to customer
-        CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, order.usedLoyalPoints, 0); // Refund loyalty points to customer
-    }
+    // if (order.customer){
+    //     order.customer = order.customer as Customer; // Ensure customer is of type Customer
+    //     // refund current loyalty points to customer
+    //     CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.INCREASE, order.usedLoyalPoints, 0); // Refund loyalty points to customer
+    // }
     // Case where the order is not pending, we need to refund loyalty points if used
     if (order.status.status !== OrderStatusName.PENDING) {
-        if (order.customer) CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE, 0, order.totalPrice); // Refund loyalty points to customer
+        if (order.customer) CustomerLevelService.handleUpdateLoyaltyPoints(order.customer, UpdateType.DECREASE,  order.totalPrice); // Refund loyalty points to customer
         // XỬ LÝ CỘNG HÀNG TỒN KHO
         for (const item of order.products) {
             item.product = item.product as Product; // Ensure item.product is of type Product
