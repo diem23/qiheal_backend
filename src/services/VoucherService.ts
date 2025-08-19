@@ -13,28 +13,28 @@ const handleGetVoucherById = async (voucherId: Types.ObjectId) => {
 const handleCreateVoucher = async (voucher: Voucher) => {
     const newVoucher = await VoucherRepo.create(voucher);
     if (!newVoucher) {
-        throw new Error("Failed to create voucher");
+        throw new Error("Tạo voucher thất bại");
     }
     return newVoucher;
 }
 const handleUpdateVoucher = async (voucherId: Types.ObjectId, voucher: Voucher) => {
     const updatedVoucher = await VoucherRepo.update(voucherId, voucher);
     if (!updatedVoucher) {
-        throw new Error("Failed to update voucher");
+        throw new Error("Cập nhật voucher thất bại");
     }
     return updatedVoucher;
 }
 const handleDeleteVoucher = async (voucherId: Types.ObjectId) => {
     const deletedVoucher = await VoucherRepo.del(voucherId);
     if (!deletedVoucher) {
-        throw new Error("Failed to delete voucher");
+        throw new Error("Xóa voucher thất bại");
     }
     return deletedVoucher;
 }
 const handleGetVoucherByCode = async (code: string) => {
     const voucher = await VoucherRepo.getByCode(code);
     if (!voucher) {
-        throw new Error("Voucher not found");
+        throw new Error("Không tìm thấy voucher");
     }
     return voucher;
 }
@@ -42,16 +42,16 @@ const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number): Pr
     // This function can be implemented to apply a voucher to a user's cart or order
     // For now, we will just return the voucher details
     if (!voucher) {
-        throw new Error("Voucher not found");
+        throw new Error("Không tìm thấy voucher");
     }
     if (typeof voucher.condition != 'number' ) {
-        throw new Error("Invalid voucher condition");
+        throw new Error("Điều kiện voucher không hợp lệ");
     }
     if (typeof voucher.discount != 'number' ) {
-        throw new Error("Invalid voucher discount");
+        throw new Error("Giảm giá voucher không hợp lệ");
     }
     if ( !voucher.expiredDate) {
-        throw new Error("Voucher expired date is required");
+        throw new Error("Ngày hết hạn voucher là bắt buộc");
     }
     return (voucher.condition <= totalPrice && voucher.expiredDate > new Date());
 
@@ -61,7 +61,7 @@ const handleRestoreVoucher = async (voucher: Voucher) => {
     voucher.isActive = true;
     const restoredVoucher = await VoucherRepo.update(voucher._id as Types.ObjectId, voucher);   
     if (!restoredVoucher) {
-        throw new Error("Failed to restore voucher");
+        throw new Error("Khôi phục voucher thất bại");
     }
     return restoredVoucher;
 }
@@ -70,7 +70,7 @@ const handleMarkVoucherAsUsed = async (voucher: Voucher) => {
     voucher.isActive = false;
     const updatedVoucher = await VoucherRepo.update(voucher._id as Types.ObjectId, voucher);
     if (!updatedVoucher) {
-        throw new Error("Failed to mark voucher as used");
+        throw new Error("Đánh dấu voucher là đã sử dụng thất bại");
     }
     return updatedVoucher;
 }

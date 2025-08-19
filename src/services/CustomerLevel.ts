@@ -15,7 +15,7 @@ const handleCreateCustomerLevel = async (customerLevel: CustomerLevel) => {
     // Simulating the create operation
     const newCustomerLevel = CustomerLevelRepo.create(customerLevel);
     if (!newCustomerLevel) {
-        throw new Error("Customer Level creation failed");
+        throw new Error("Tạo phân hạng khách hàng thất bại");
     }
     return newCustomerLevel;
 }
@@ -36,7 +36,7 @@ const handleGetCustomerLevelById = async (customerLevelId: Types.ObjectId) => {
     // Simulating the get operation
     const customerLevel = CustomerLevelRepo.getById(customerLevelId);
     if (!customerLevel) {
-        throw new Error("Customer Level not found");
+        throw new Error("Không tìm thấy phân hạng khách hàng");
     }
     return customerLevel;
 }
@@ -48,7 +48,7 @@ const handleUpdateCustomerLevel = async (customerLevelId: Types.ObjectId, custom
     // Simulating the update operation
     const updatedCustomerLevel = CustomerLevelRepo.update(customerLevelId, customerLevel);
     if (!updatedCustomerLevel) {
-        throw new Error("Customer Level update failed");
+        throw new Error("Cập nhật phân hạng khách hàng thất bại");
     }
     return updatedCustomerLevel;
 }
@@ -60,7 +60,7 @@ const handleDeleteCustomerLevel = async (customerLevelId: Types.ObjectId) => {
     // Simulating the delete operation
     const deletedCustomerLevel = CustomerLevelRepo.del(customerLevelId);
     if (!deletedCustomerLevel) {
-        throw new Error("Customer Level deletion failed");
+        throw new Error("Xóa phân hạng khách hàng thất bại");
     }
     return deletedCustomerLevel;
 }
@@ -68,7 +68,7 @@ const handleGetByThreshold = async (threshold: number) => {
     // This function will retrieve customer levels by a specific threshold
     const customerLevels = await CustomerLevelRepo.getAll();
     if (!customerLevels || customerLevels.length === 0) {
-        throw new Error("No customer levels found");
+        throw new Error("Không tìm thấy phân hạng khách hàng");
     }
     if (customerLevels[customerLevels.length - 1].threshold){
         if (threshold > (customerLevels[customerLevels.length - 1].threshold as number)) {
@@ -78,9 +78,9 @@ const handleGetByThreshold = async (threshold: number) => {
     const customerLevel = customerLevels.find(level => level.threshold && level.threshold <= threshold);
     return customerLevel;
 }
-const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateType, loyaltyPoints: number = 0, totalPrice: number = 0) => {
+const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateType, totalPrice: number = 0) => {
     if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error("Không tìm thấy khách hàng");
     }
 
     const customerId = customer._id as Types.ObjectId;
@@ -88,18 +88,17 @@ const handleUpdateLoyaltyPoints = async (customer: Customer, updateType: UpdateT
     if (!customer.usedLoyalPoints) customer.usedLoyalPoints = 0; // Initialize usedLoyalPoints if not present
     if (!customer.currentLoyalPoints) customer.currentLoyalPoints = 0; // Initialize currentLoyalPoints if not present
     
-    const modifyingLoyaltyPoints = (totalPrice > 0) ? await SystemSettingsService.pointAndMoneyConversion(ConversionType.MONEY_TO_POINT, totalPrice, 0) : loyaltyPoints; // Use provided loyalty points or current used points
+    const modifyingLoyaltyPoints =  await SystemSettingsService.pointAndMoneyConversion(ConversionType.MONEY_TO_POINT, totalPrice, 0) ?? 0; // Use provided loyalty points or current used points
     if (updateType === UpdateType.INCREASE) {
          // Ensure customer ID is of type ObjectId
-        if (totalPrice > 0) customer.usedLoyalPoints += modifyingLoyaltyPoints; // Add used loyalty points to customer
-        customer.currentLoyalPoints += modifyingLoyaltyPoints; // Add current loyalty points to customer
+        // if (totalPrice > 0) customer.usedLoyalPoints += modifyingLoyaltyPoints; // Add used loyalty points to customer
+        // customer.currentLoyalPoints += modifyingLoyaltyPoints; // Add current loyalty points to customer
+        customer.usedLoyalPoints += modifyingLoyaltyPoints
     }
     else if (updateType === UpdateType.DECREASE) {
-        if ( customer.usedLoyalPoints < modifyingLoyaltyPoints) {
-            throw new Error("Insufficient loyalty points to decrease");
-        }
-        if (totalPrice > 0) customer.usedLoyalPoints -= modifyingLoyaltyPoints; // Subtract used loyalty points from customer
-        customer.currentLoyalPoints -= modifyingLoyaltyPoints; // Subtract current loyalty points from customer
+        // if (totalPrice > 0) customer.usedLoyalPoints -= modifyingLoyaltyPoints; // Subtract used loyalty points from customer
+        // customer.currentLoyalPoints -= modifyingLoyaltyPoints; // Subtract current loyalty points from customer
+        customer.usedLoyalPoints -= modifyingLoyaltyPoints;
     }
     
     const newCustomerLevel = await CustomerLevelService.handleGetByThreshold(customer.usedLoyalPoints) // Ensure levelId is of type CustomerLevel

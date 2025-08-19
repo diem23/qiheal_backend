@@ -14,6 +14,7 @@ export default interface Order {
     usedLoyalPoints?: number // Optional, if the customer uses loyal points
     collaborator?: Types.ObjectId // Optional, if the order is handled by a collaborator
     totalPrice: number
+    fullname?: string
     phone?: string // Optional, if the customer provides a phone number
     province?: string // Optional, if the order is shipped to a specific province
     district?: string // Optional, if the order is shipped to a specific district
@@ -21,6 +22,7 @@ export default interface Order {
     address?: string // Optional, if the order is shipped to a specific address
     note?: string // Optional, if the customer adds a note to the order
     voucher?: Types.ObjectId | Voucher
+    email?: string // Optional, if the customer provides an email address
     status: Types.ObjectId | OrderStatus // e.g., 'pending', 'completed', 'cancelled'
     isActive?: boolean
 }
@@ -32,11 +34,14 @@ const schema = new Schema<Order>({
         product: {type: Schema.Types.ObjectId, ref: "Products", required: true},
         quantity: {type: Schema.Types.Number, required: true, default: 1}
     }],
+    email: {type: Schema.Types.String, required: false},
     usedLoyalPoints: {type: Schema.Types.Number, required: false, default: 0},
     collaborator: {type: Schema.Types.ObjectId, ref: "Collaborators", required: false},
     totalPrice: {type: Schema.Types.Number, required: true, default: 0},
     province: {type: Schema.Types.String, required: false},
     district: {type: Schema.Types.String, required: false},
+    phone: {type: Schema.Types.String, required: false},
+    fullname: {type: Schema.Types.String, required: false},
     ward: {type: Schema.Types.String, required: false},
     address: {type: Schema.Types.String, required: false},
     note: {type: Schema.Types.String, required: false},

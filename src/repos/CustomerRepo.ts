@@ -17,6 +17,12 @@ const findByUserEmail = async (email: string) => {
     const customer = await CustomerModel.findOne({ email: email }).populate("user").populate("levelId");
     return customer;
 }
+const findByUserName = async (username: string) => {
+    const customer = await CustomerModel.findOne({ "user.username": username })
+        .populate("user")
+        .populate("levelId");
+    return customer;
+}
 const update = async (id: Types.ObjectId, customer: any) => {
     const updatedCustomer = await CustomerModel.findByIdAndUpdate(id, customer, { new: true }).populate("user").populate("levelId");
     return updatedCustomer;
@@ -36,6 +42,7 @@ const getByPhone = async (phone: string) => {
 export const  CustomerRepo = {
     getByPhone,
     findByUserEmail,
+    findByUserName,
     create,
     findById,
     findByUserId,

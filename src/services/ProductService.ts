@@ -16,11 +16,11 @@ const handleGetProducts = async (req: any) => {
 }
 const handleGetProductsByListOfIds = async (productIds: Types.ObjectId[]) => {
     if (!Array.isArray(productIds) || productIds.length === 0) {
-        throw new Error('Invalid product IDs');
+        throw new Error('Các mã sản phẩm không hợp lệ');
     }
     for (const id of productIds) {
         if (!Types.ObjectId.isValid(id)) {
-            throw new Error(`Invalid product ID: ${id}`);
+            throw new Error(`Mã sản phẩm không hợp lệ: ${id}`);
         }
     }
 
@@ -28,7 +28,7 @@ const handleGetProductsByListOfIds = async (productIds: Types.ObjectId[]) => {
         const productId = id as Types.ObjectId;
         const product = await ProductRepo.getById(productId);
         if (!product) {
-            throw new Error(`Product not found for ID: ${id}`);
+            throw new Error(`Không tìm thấy sản phẩm cho Id: ${id}`);
         }
         return product;
     }));
@@ -63,7 +63,7 @@ const handleUpdateProductStock = async (product: Product, quantity: number, upda
             product.stockQty = quantity;
             break;
         default:
-            throw new Error('Invalid update type');
+            throw new Error('Loại cập nhật không hợp lệ');
     }
     const tempProduct: Product = {
         stockQty: product.stockQty
@@ -83,7 +83,7 @@ const addBase64ImagesToProduct = async (req: any) => {
     const filteredFiles = filesArray.filter((file: any) => typeof file === 'object' && file !== null);
     const filesBase64: string [] = filteredFiles.map((file: any) => 'data:image/jpeg;base64,' + file?.data.toString('base64'));
     if (!Types.ObjectId.isValid(productId)) {
-        throw new Error('Invalid Product ID');
+        throw new Error('Mã sản phẩm không hợp lệ');
     }
 
     const updatedProduct = await ProductRepo.updateImages(
@@ -97,7 +97,13 @@ const handleChooseRelatedProducts = async (productId: Types.ObjectId, relatedPro
     const product = ProductRepo.chooseRelatedProducts(productId, relatedProductIds)
     return product;
 }
+const handleGetProductBySlug = async (req: any) => {
+    const productSlug = req.params.slug;
+    const product = await ProductRepo.getBySlug(productSlug);
+    return product;
+}
 const ProductService = {
+    handleGetProductBySlug,
     handleSearch,
     handleUpdateProductStock,
     handleGetProductsByListOfIds,

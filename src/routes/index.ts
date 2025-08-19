@@ -16,6 +16,7 @@ import { UploadRouter } from './upload';
 import { ContactRouter } from './contact';
 import { SystemSettingRouter } from './systemSetting';
 import { VoucherRouter } from './voucher';
+import { CustomerMeRouter } from './customerMe';
 
 
 const router = express.Router();
@@ -46,8 +47,14 @@ router.use('/users', jwtVerify,verifyRoles(UserRole.ADMIN), UserRoute
             "apiKeyAuth": []
     }] */
 );
-router.use('/customers', jwtVerify, verifyRoles(UserRole.ADMIN), CustomerRouter
+router.use('/customers', jwtVerify,verifyRoles(UserRole.ADMIN), CustomerRouter
     // #swagger.tags = ['Customer']
+    /* #swagger.security = [{
+            "apiKeyAuth": []
+    }] */
+);
+router.use('/me', jwtVerify, CustomerMeRouter
+    // #swagger.tags = ['Me']
     /* #swagger.security = [{
             "apiKeyAuth": []
     }] */

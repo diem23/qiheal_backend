@@ -17,7 +17,7 @@ export const COLLECTION_NAME = 'Users'
 const schema = new Schema<User>({
     profilePic: {type: Schema.Types.String, required: false},
     username: {type: Schema.Types.String, required: true, unique: true},
-    password: {type: Schema.Types.String, required: true},
+    password: {type: Schema.Types.String, required: false},
     isActive: {type: Schema.Types.Boolean, default: true},
     role: {type: [Schema.Types.String],  default: [UserRole.CUSTOMER],enum: Object.values(UserRole)},
 }, {

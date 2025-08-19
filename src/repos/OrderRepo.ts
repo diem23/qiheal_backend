@@ -4,7 +4,7 @@ import { OrderModel } from "../model/Order";
 
 const getAll = async () => {
     // This function will retrieve all orders from the database
-    const orders = await OrderModel.find().sort({createdAt: -1}).populate('customer').where('isActive', true).exec();
+    const orders = await OrderModel.find().sort({createdAt: -1}).populate('customer').populate('status').where('isActive', true).exec();
     return orders;
 }
 const getById = async (id: Types.ObjectId) => {
@@ -35,7 +35,7 @@ const del = async (id: Types.ObjectId) => {
 }   
 const getByCustomerId = async (customerId: Types.ObjectId) => {
     // This function will retrieve all orders for a specific customer
-    const orders = await OrderModel.find({ customer: customerId }).populate('customer').exec();
+    const orders = await OrderModel.find({ customer: customerId }).populate('status').populate('customer').exec();
     return orders;
 }
 const getByCollaboratorId = async (collaboratorId: Types.ObjectId) => {

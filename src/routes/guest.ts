@@ -4,6 +4,7 @@ import PostService from '../services/PostService';
 import ProductService from '../services/ProductService';
 import { OrderService } from '../services/OrderService';
 import { ContactService } from '../services/ContactService';
+import sendMail from '../helper/sendMail';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -76,9 +77,17 @@ GuestRouter.get('/product/', async(req,  res) => {
 GuestRouter.get('/product/:id', async (req, res) => {
     const reponse = await ProductService.handleGetProductById(req)
     if (!reponse) {
-        return res.status(404).json({ message: 'Product not found' });
+        return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
     }
     res.status(200).send(reponse)
+});
+GuestRouter.get('/product/slug/:slug', async (req, res) => {
+    const response = await ProductService.handleGetProductBySlug(req)
+    console.log(response);
+    if (!response) {
+        return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+    res.status(200).send(response)
 });
 // Create a new order
 GuestRouter.post('/order',async (req, res) => {
@@ -93,8 +102,11 @@ GuestRouter.post('/order',async (req, res) => {
                 ],
                 $usedLoyalPoints: 100,
                 $collaborator: "645b1f2e8f1b2c001c8e4d3d",
+                $voucher: "TH_01",
                 $totalPrice: 250.00,
                 $phone: "1234567890",
+                $fullname: "John Doe",
+                $email: "johndoe@example.com",
                 $province: "Hanoi",
                 $district: "Hoan Kiem",
                 $ward: "Cua Dong",
@@ -104,7 +116,22 @@ GuestRouter.post('/order',async (req, res) => {
         } 
         */
     try {
-    const response = await OrderService.handleCreateOrder(req.body);
+    const voucherCode = req.body.voucher;
+    delete req.body.voucher;
+    const response = await OrderService.handleCreateOrder(req.body, voucherCode);
+    await OrderService.handleSendMailAfterOrder( 'tuvanskhhvn@gmail.com', 'New Order Created', 
+        {
+            fullname: response?.fullname,
+            orderCode: response?._id.toString(),
+            totalPrice: response?.totalPrice,
+            email: response?.email,
+            phone: response?.phone,
+            province: response?.province,
+            district: response?.district,
+            ward: response?.ward,
+            address: response?.address,
+            orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+        });
     res.status(201).json({
         message: 'Order created successfully',
         data: response,

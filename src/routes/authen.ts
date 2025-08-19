@@ -1,7 +1,8 @@
-import { UserRole } from "../model/User";
+import User, { UserRole } from "../model/User";
 import AuthenService from "../services/AuthenService";
 import express from "express";
 import { CustomerService } from "../services/CustomerService";
+import Customer from "../model/Customer";
 export const AuthenRouter = express.Router();
 AuthenRouter.post("/signup/customer", async (req, res) => {
     /* #swagger.parameters['body'] = {
@@ -18,12 +19,13 @@ AuthenRouter.post("/signup/customer", async (req, res) => {
         } 
         */
     try {
-        const customerData ={
+        const customerData: Customer ={
             phone: req.body.phone,
+            fullname: req.body.fullname,
             email: req.body.email,
             levelId: req.body.levelId,
         }
-        const userData = {
+        const userData: User = {
             username: req.body.username,
             password: req.body.password,
             role: [UserRole.CUSTOMER],
@@ -103,3 +105,30 @@ AuthenRouter.post('/login', async (req, res)=>{
         });
     }
 })
+AuthenRouter.post('/google-login', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Google login',
+            schema: { 
+                $tokenId: "google_token_id"
+            }
+        }
+        */
+    try {
+        const response = await AuthenService.handleGoogleLogin(req.body.tokenId);
+        if (response) {
+            return res.status(200).json({
+                message: 'Google login successfully',
+                data: response,
+            });
+        }
+        return res.status(400).json({
+            message: 'Google login failed',
+        });
+    } catch (error) {
+        console.error('Google login error:', error);
+        return res.status(500).json({
+            error: error instanceof Error ? error.message : String(error)
+        });
+    }
+});

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import User from "../model/User";
 import UserRepo from "../repos/UserRepo";
 
@@ -10,6 +11,13 @@ const handleGetUserById = async (req: any) => {
     const user = await UserRepo.getById(userId);
     return user;
 }
+const handleGetUserByUserName = async (username: string| undefined) => {
+    if (!username) {
+        throw new Error("Cần có tên đăng nhập");
+    }
+    const user = await UserRepo.findByUsername(username);
+    return user;
+}
 const handleCreateUser = async (user: User) => {
     const newUser = await UserRepo.create(user);
     return newUser;
@@ -19,14 +27,14 @@ const handleUpdateUser = async (req: any) => {
     const updatedUser = await UserRepo.update(userId, req.body);
     return updatedUser;
 }
-const handleDeleteUser = async (req: any) => {
-    const userId = req.params.id;
+const handleDeleteUser = async (userId: string) => {
     const deletedUser = await UserRepo.del(userId);
     return deletedUser;
 }
 const UserService = {
     handleGetUsers,
     handleGetUserById,
+    handleGetUserByUserName,
     handleCreateUser,
     handleUpdateUser, 
     handleDeleteUser

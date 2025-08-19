@@ -23,7 +23,7 @@ const schema = new Schema<Product>({
     warningLevel: {type: Schema.Types.Number, required: true},
     categoryId: {type: Schema.Types.ObjectId, ref: "Category"},
     images: {type: [Schema.Types.String], required: true},
-    slug: {type: Schema.Types.String, required: true},
+    slug: {type: Schema.Types.String, required: true, unique: true},
     relatedProduct: {type: [Schema.Types.ObjectId], ref: "Products", default: []},
     actualPrice: {type: Schema.Types.Number, required: true, default: 0},
     isActive: {type: Schema.Types.Boolean, required: true, default: true}

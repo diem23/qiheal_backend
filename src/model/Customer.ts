@@ -17,7 +17,7 @@ export default interface Customer {
 export const DOCUMENT_NAME = 'Customers'
 export const COLLECTION_NAME = 'Customers'
 const schema = new Schema<Customer>({
-    phone: {type: Schema.Types.String, required: true, unique: true}, 
+    phone: {type: Schema.Types.String, required: false}, 
     fullname: {type: Schema.Types.String, required: false},
     email: {type: Schema.Types.String, required: false, unique: true},
     user: {type: Schema.Types.ObjectId, ref: "Users"},

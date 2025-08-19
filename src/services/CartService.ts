@@ -7,7 +7,7 @@ const calTotalPrice = async (cartId: Types.ObjectId) => {
     const cart = await handleGetCartById(cartId);
     //const cart = await CartModel.findById(cartId).populate('products').exec();
     if (!cart) {
-        throw new Error("Cart not found");
+        throw new Error("Không tìm thấy giỏ hàng");
     }
     let totalPrice = cart.products.reduce((total, item) => {
         item.product = item.product as Product; // Ensure item.product is of type Product
@@ -26,7 +26,7 @@ const handleGetCarts = async () => {
 const handleUpdateCart = async (cartId: Types.ObjectId, cart: Cart) => {
     const existingCart = await handleGetCartById(cartId);
     if (!existingCart) {
-        throw new Error("Cart not found");
+        throw new Error("Không tìm thấy giỏ hàng");
     }
     existingCart.products = cart.products;
     let updatedCart = await CartRepo.update(cartId, existingCart)
@@ -43,7 +43,7 @@ const handleCreateCart = async (cart: Cart) => {
     // Simulating the create operation
     const newCart = CartRepo.create(cart)
     if (!newCart) {
-        throw new Error("Cart creation failed");
+        throw new Error("Tạo giỏ hàng thất bại");
     }
     return newCart;
 }
@@ -55,7 +55,7 @@ const handleGetCartById = async (cartId: Types.ObjectId) => {
     // Simulating the get operation
     const cart = await CartRepo.getById(cartId)
     if (!cart) {
-        throw new Error("Cart not found");
+        throw new Error("Không tìm thấy giỏ hàng");
     }
     return cart;
 }
@@ -67,7 +67,7 @@ const handleGetCartByCustomerId = async (customerId: Types.ObjectId) => {
     // Simulating the get operation
     const cart = CartRepo.getByCustomerId(customerId)
     if (!cart) {
-        throw new Error("Cart not found for this customer");
+        throw new Error("Không tìm thấy giỏ hàng cho khách hàng này");
     }
     return cart;
 }
@@ -78,15 +78,15 @@ const handleDeleteCart = async (cartId: Types.ObjectId) => {
     
     // Simulating the delete operation
     if (!Types.ObjectId.isValid(cartId)) {
-        throw new Error("Invalid Cart ID");
+        throw new Error("Id giỏ hàng không hợp lệ");
     }
     const curCart = handleGetCartById(cartId); // Ensure the cart exists before deleting
     if (!curCart) {
-        throw new Error("Cart not found");
+        throw new Error("Không tìm thấy giỏ hàng");
     }
     const deletedCart = CartRepo.del(cartId)
     if (!deletedCart) {
-        throw new Error("Cart deletion failed");
+        throw new Error("Xóa giỏ hàng thất bại");
     }
     return deletedCart;
 }
