@@ -194,7 +194,7 @@ GuestRouter.post('/contact', async (req, res) => {
         });
     }   
 });
-GuestRouter.get('/:code',   async (req, res) => {
+GuestRouter.get('voucher/:code',   async (req, res) => {
     try {
         const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
         if (!voucher) {
