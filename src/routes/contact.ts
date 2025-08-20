@@ -17,7 +17,7 @@ ContactRouter.get('/', async (req, res) => {
 ContactRouter.get('/:id', async (req, res) => {
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid contact ID' });
+            return res.status(400).json({ message: 'Mã liên hệ không hợp lệ' });
         }
         const contactId = new Types.ObjectId(req.params.id);
         const response = await ContactService.handleGetContactById(contactId);
@@ -32,7 +32,7 @@ ContactRouter.get('/:id', async (req, res) => {
 ContactRouter.put('/:id', async (req, res) => {
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid contact ID' });
+            return res.status(400).json({ message: 'Mã liên hệ không hợp lệ' });
         }
         const contactId = new Types.ObjectId(req.params.id);
         const response = await ContactService.handleUpdateContact(contactId, req.body);
@@ -50,7 +50,7 @@ ContactRouter.put('/:id', async (req, res) => {
 ContactRouter.delete('/:id', async (req, res) => {
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid contact ID' });
+            return res.status(400).json({ message: 'Mã liên hệ không hợp lệ' });
         }
         const contactId = new Types.ObjectId(req.params.id);
         const response = await ContactService.handleDeleteContact(contactId);

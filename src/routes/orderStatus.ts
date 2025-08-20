@@ -15,7 +15,7 @@ OrderStatusRouter.get('/', verifyRoles(UserRole.ADMIN), async (req, res) => {
 OrderStatusRouter.get('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid order status ID' });
+            return res.status(400).json({ message: 'Mã trạng thái đơn hàng không hợp lệ' });
         }
         const orderStatusId = new Types.ObjectId(req.params.id );
         const response = await OrderStatusService.handleGetOrderStatusById(orderStatusId);
@@ -67,7 +67,7 @@ OrderStatusRouter.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
         */
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid order status ID' });
+            return res.status(400).json({ message: 'Mã trạng thái đơn hàng không hợp lệ' });
         }
         const orderStatusId = new Types.ObjectId(req.params.id);
         const response = await OrderStatusService.handleUpdateOrderStatus( orderStatusId,req.body);
@@ -85,7 +85,7 @@ OrderStatusRouter.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
 OrderStatusRouter.delete('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
     try {
         if (!Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid order status ID' });
+            return res.status(400).json({ message: 'Mã trạng thái đơn hàng không hợp lệ' });
         }
         const orderStatusId = new Types.ObjectId(req.params.id);
         const response = await OrderStatusService.handleDeleteOrderStatus(orderStatusId);

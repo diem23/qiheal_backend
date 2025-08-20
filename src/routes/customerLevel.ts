@@ -15,7 +15,7 @@ CustomerLevelRouter.get("/",verifyRoles(UserRole.ADMIN),  async (req, res) => {
 CustomerLevelRouter.get("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
-            message: "Invalid customer level ID",
+            message: "Mã cấp độ khách hàng không hợp lệ",
         });
     }
     const customerLevelId = new Types.ObjectId(req.params.id);
@@ -39,7 +39,7 @@ CustomerLevelRouter.put("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => 
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
-                message: "Invalid customer level ID",
+                message: "Mã cấp độ khách hàng không hợp lệ",
             });
         }
         const customerLevelId = new Types.ObjectId(req.params.id);
@@ -90,7 +90,7 @@ CustomerLevelRouter.post("/",verifyRoles(UserRole.ADMIN), async (req, res) => {
 CustomerLevelRouter.delete("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
-            message: "Invalid customer level ID",
+            message: "Mã cấp độ khách hàng không hợp lệ",
         });
     }
     const customerLevelId = new Types.ObjectId(req.params.id);

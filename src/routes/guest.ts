@@ -5,6 +5,7 @@ import ProductService from '../services/ProductService';
 import { OrderService } from '../services/OrderService';
 import { ContactService } from '../services/ContactService';
 import sendMail from '../helper/sendMail';
+import VoucherService from '../services/VoucherService';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -192,4 +193,18 @@ GuestRouter.post('/contact', async (req, res) => {
             error: error instanceof Error ? error.message : String(error),
         });
     }   
+});
+GuestRouter.get('/:code',   async (req, res) => {
+    try {
+        const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
+        if (!voucher) {
+            return res.status(404).json({ message: 'Voucher not found' });
+        }
+        res.status(200).json(voucher);
+    } catch (error) {
+        return res.status(500).json({   
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
 });

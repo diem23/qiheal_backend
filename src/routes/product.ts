@@ -57,7 +57,7 @@ ProductRouter.put('/:id',verifyRoles(UserRole.ADMIN), async (req, res) => {
         } 
         */
     if (Types.ObjectId.isValid(req.params.id) === false) {
-        return res.status(400).json({ message: 'Invalid Product ID' });
+        return res.status(400).json({ message: 'Mã sản phẩm không hợp lệ' });
     }
     const productId = new Types.ObjectId(req.params.id);
     const response = await ProductService.handleUpdateProduct(req.body, productId)
@@ -103,7 +103,7 @@ ProductRouter.post("/upload1/:id", upload.array("multFiles", 2), async (req, res
             items: { type: 'file' }
         } */
     if (Types.ObjectId.isValid(req.params.id) === false) {
-        return res.status(400).json({ message: 'Invalid Product ID' });
+        return res.status(400).json({ message: 'Mã sản phẩm không hợp lệ' });
     }
     const productId = new Types.ObjectId(req.params.id);
    
@@ -136,7 +136,7 @@ ProductRouter.post('/related/', verifyRoles(UserRole.ADMIN), async (req, res) =>
     */
     try {
         if (!Types.ObjectId.isValid(req.body.id)) {
-            return res.status(400).json({ message: 'Invalid Product ID' });
+            return res.status(400).json({ message: 'Mã sản phẩm không hợp lệ' });
         }
         const response = await ProductService.handleChooseRelatedProducts(req.body.id, req.body.relatedProductIds as Types.ObjectId[]);
         res.status(200).json({
