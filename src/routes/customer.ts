@@ -19,7 +19,7 @@ CustomerRouter.get("/:id", async (req, res) => {
     // #swagger.tags = ['Customer']
     if (Types.ObjectId.isValid(req.params.id) === false) {
         return res.status(400).json({
-            message: "Invalid customer ID",
+            message: "Mã khách hàng không hợp lệ",
         });
     }
     const customerId = new Types.ObjectId(req.params.id);
@@ -46,7 +46,7 @@ CustomerRouter.put("/:id", async (req, res) => {
 
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
-                message: "Invalid customer ID",
+                message: "Mã khách hàng không hợp lệ",
             });
         }
         const customerId = new Types.ObjectId( req.params.id);
@@ -67,7 +67,7 @@ CustomerRouter.delete("/:id",verifyRoles(UserRole.ADMIN), async (req, res) => {
     try{
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
-                message: "Invalid customer ID",
+                message: "Mã khách hàng không hợp lệ",
             });
         }
         const customerId = new Types.ObjectId(req.params.id);
