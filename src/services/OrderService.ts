@@ -205,7 +205,7 @@ const handleCreateOrder = async (orderData: Order, voucherCode: string ) => {
         if (newOrder.totalPrice < 300000) newOrder.totalPrice += 20000; // Add shipping fee if total price is less than 300000
         //console.log("newOrder2.totalPrice: ", newOrder?.totalPrice);
         // Apply voucher if provided after calculating total price
-        if (orderData.voucher) newOrder.totalPrice = await handleApplyVoucher(newOrder, voucherCode ); // Apply voucher if provided
+        if (voucherCode) newOrder.totalPrice = await handleApplyVoucher(newOrder, voucherCode ); // Apply voucher if provided
         const updatedOrder = await OrderRepo.update(newOrder._id as Types.ObjectId, newOrder); // Update the order with total price and voucher
         //console.log("updatedOrder.totalPrice: ", updatedOrder?.totalPrice);
         return updatedOrder;
@@ -277,6 +277,7 @@ const handleApproveOrder = async (orderId: Types.ObjectId) => {
 // This function will apply a voucher to an order and mark it as used
 const handleApplyVoucher = async (order: Order, voucherCode: string) => {
     const voucher = await VoucherService.handleGetVoucherByCode(voucherCode); // Get voucher by code
+    console.log("voucher used for order: ", voucher)
     order.voucher = voucher._id as Types.ObjectId; // Set voucher ID to the order
     if (!voucher) {
         throw new Error("Không tìm thấy voucher");
@@ -366,7 +367,15 @@ const handleDeleteOrder = async (orderId: Types.ObjectId) => {
     }
     return deletedOrder;
 }
+const handleGetOrdersByVoucherId= async (voucherId: Types.ObjectId) => {
+    const orders = await OrderRepo.getByVoucherId(voucherId);
+    if (!orders) {
+        throw new Error("Không tìm thấy đơn hàng sử dụng voucher");
+    }
+    return orders;
+}
 export const OrderService = {
+    handleGetOrdersByVoucherId,
     handleSendMailAfterOrder,
     handleCreateOrder,
     handleGetOrdersByCustomerId,

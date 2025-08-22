@@ -12,6 +12,9 @@ const getById = async (id: string): Promise<User|null> => {
     return user
 }
 const update = async (id: string, user: any) => {
+    if (user.password) {
+            user.password = await bcrypt.hash(user.password, 10)
+    }
     const updatedUser = await UserModel.findByIdAndUpdate(id, user, { new: true }).exec()
     return updatedUser
 }

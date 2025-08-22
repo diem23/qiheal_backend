@@ -43,8 +43,14 @@ const getByCollaboratorId = async (collaboratorId: Types.ObjectId) => {
     const orders = await OrderModel.find({ collaborator: collaboratorId }).populate('customer').exec();
     return orders;
 }
+const getByVoucherId = async (voucherId: Types.ObjectId) => {
+    // This function will retrieve all orders using a specific voucher
+    const orders = await OrderModel.find({ voucher: voucherId }).populate('status').populate('customer').exec();
+    return orders;
+}
 export const OrderRepo = {
     getAll,
+    getByVoucherId,
     getById,
     create,
     update,
