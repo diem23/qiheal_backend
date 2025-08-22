@@ -6,6 +6,7 @@ import { OrderService } from '../services/OrderService';
 import { ContactService } from '../services/ContactService';
 import sendMail from '../helper/sendMail';
 import VoucherService from '../services/VoucherService';
+import { PaginationSetting } from '../Types/Pagination.props';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -65,6 +66,26 @@ GuestRouter.post('/product/search', async (req, res) => {
         data: response,
     });
 });
+// Get products by pagination
+GuestRouter.post('/product/pagination', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Get products by pagination',
+            schema: { 
+                page: 1,
+                limit: 10
+            }
+        } 
+    */
+    const page = parseInt(req.body.page as string) || PaginationSetting.DEFAULT_PAGE;
+    const limit = parseInt(req.body.limit as string) || PaginationSetting.DEFAULT_LIMIT;
+    const response = await ProductService.handleGetByPagination(page, limit);
+    res.status(200).json({
+        message: 'Get products by pagination successfully',
+        count: response?.length,
+        data: response,
+    });
+})
 // Get all products
 GuestRouter.get('/product/', async(req,  res) => {
     const response = await ProductService.handleGetProducts(req)

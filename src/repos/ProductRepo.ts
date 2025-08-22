@@ -24,6 +24,16 @@ const getAlls = async ():Promise<Product[] | null> => {
     
     return products
 }
+const getByPagination = async (page: number, limit: number): Promise<Product[] | null> => {
+    const products = await ProductModel.find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean<Product[]>()
+        .exec()
+
+    return products
+}
 const getById = async (id: Types.ObjectId): Promise<Product|null> => {
     const product = await ProductModel.findById(id).lean().exec()
     return product
@@ -90,6 +100,7 @@ const chooseRelatedProducts = async (productId: Types.ObjectId, relatedProductId
     return currentProduct;
 }
 const ProductRepo = {
+    getByPagination,
     search,
     getAlls,
     getById,
