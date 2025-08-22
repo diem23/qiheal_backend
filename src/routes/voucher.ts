@@ -74,6 +74,7 @@ VoucherRouter.post('/',   async (req, res) => {
             schema: { 
                 $code: "TH_01",
                 $discount: "10000",
+                $quantity: "10"
                 $condition: "100000",
                 $expiredDate: "2024-12-31",
             }
