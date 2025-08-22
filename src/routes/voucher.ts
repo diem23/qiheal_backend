@@ -1,9 +1,6 @@
 import express from 'express';
 import VoucherService from '../services/VoucherService';
 import { Types } from 'mongoose';
-import { UserRole } from '../model/User';
-import verifyRoles from '../middleware/verifyRoles';
-import { OrderService } from '../services/OrderService';
 export const VoucherRouter = express.Router();
 VoucherRouter.get('/',   async (req, res) => {
     try {
@@ -74,7 +71,7 @@ VoucherRouter.post('/',   async (req, res) => {
             schema: { 
                 $code: "TH_01",
                 $discount: "10000",
-                $quantity: "10"
+                $quantity: "10",
                 $condition: "100000",
                 $expiredDate: "2024-12-31",
             }
