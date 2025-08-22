@@ -11,6 +11,7 @@ const handleGetVoucherById = async (voucherId: Types.ObjectId) => {
     return voucher;
 }
 const handleCreateVoucher = async (voucher: Voucher) => {
+    voucher.remainingQuantity = voucher.quantity;
     const newVoucher = await VoucherRepo.create(voucher);
     if (!newVoucher) {
         throw new Error("Tạo voucher thất bại");
@@ -53,7 +54,7 @@ const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number): Pr
     if ( !voucher.expiredDate) {
         throw new Error("Ngày hết hạn voucher là bắt buộc");
     }
-    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date() && (voucher.quantity ?? 0) > 0);
+    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date() && (voucher.remainingQuantity ?? 0) > 0);
 
 }
 const handleRestoreVoucher = async (voucher: Voucher) => {
@@ -68,8 +69,8 @@ const handleRestoreVoucher = async (voucher: Voucher) => {
 const handleMarkVoucherAsUsed = async (voucher: Voucher) => {
     // This function can be implemented to mark a voucher as used
     //voucher.isActive = false;
-    voucher.quantity ? voucher.quantity-- : 0;
-    if (!voucher.quantity) voucher.isActive = false;
+    voucher.remainingQuantity ? voucher.remainingQuantity-- : 0;
+    if (!voucher.remainingQuantity) voucher.isActive = false;
     const updatedVoucher = await VoucherRepo.update(voucher._id as Types.ObjectId, voucher);
     if (!updatedVoucher) {
         throw new Error("Đánh dấu voucher là đã sử dụng thất bại");
