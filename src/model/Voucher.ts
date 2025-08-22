@@ -4,6 +4,7 @@ export default interface Voucher {
     code?: string,
     discount?: number,
     isActive?: boolean,
+    quantity?: number,
     expiredDate?: Date,
     condition?: number
 }
@@ -14,6 +15,7 @@ const schema = new Schema<Voucher>({
     discount: {type: Schema.Types.Number, required: true},
     isActive: {type: Schema.Types.Boolean, default: true},
     expiredDate: {type: Schema.Types.Date, required: true},
+    quantity: {type: Schema.Types.Number, default: 0},
     condition: {type: Schema.Types.Number, required: true},
 }, {
     timestamps: true,
