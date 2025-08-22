@@ -3,6 +3,7 @@ import VoucherService from '../services/VoucherService';
 import { Types } from 'mongoose';
 import { UserRole } from '../model/User';
 import verifyRoles from '../middleware/verifyRoles';
+import { OrderService } from '../services/OrderService';
 export const VoucherRouter = express.Router();
 VoucherRouter.get('/',   async (req, res) => {
     try {
@@ -51,6 +52,21 @@ VoucherRouter.get('/:id',   async (req, res) => {
 //         });
 //     }
 // });
+VoucherRouter.get('/:code/orders', async (req, res) => {
+    try {
+        const orders = await VoucherService.handleGetOrdersByCode(req.params.code);
+        res.status(200).json({
+            message: 'Get orders by voucher code successfully',
+            count: orders?.length,
+            data: orders,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
 VoucherRouter.post('/',   async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',

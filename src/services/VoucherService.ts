@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import VoucherRepo from "../repos/VoucherRepo";
 import Voucher from "../model/Voucher";
+import { OrderService } from "./OrderService";
 
 const handleGetAllVouchers = async () => {
     const vouchers = await VoucherRepo.getAlls();
@@ -77,8 +78,16 @@ const handleMarkVoucherAsUsed = async (voucher: Voucher) => {
     }
     return updatedVoucher;
 }
-
+const handleGetOrdersByCode = async (code: string) => {
+    const voucher = await VoucherRepo.getByCode(code);
+    const customers = await OrderService.handleGetOrdersByVoucherId(voucher?._id as Types.ObjectId);
+    if (!customers) {
+        throw new Error("Không tìm thấy khách hàng sử dụng voucher");
+    }
+    return customers;
+}
 const VoucherService = {
+    handleGetOrdersByCode,
     handleGetAllVouchers,
     handleGetVoucherById,
     handleCreateVoucher,

@@ -367,7 +367,15 @@ const handleDeleteOrder = async (orderId: Types.ObjectId) => {
     }
     return deletedOrder;
 }
+const handleGetOrdersByVoucherId= async (voucherId: Types.ObjectId) => {
+    const orders = await OrderRepo.getByVoucherId(voucherId);
+    if (!orders) {
+        throw new Error("Không tìm thấy đơn hàng sử dụng voucher");
+    }
+    return orders;
+}
 export const OrderService = {
+    handleGetOrdersByVoucherId,
     handleSendMailAfterOrder,
     handleCreateOrder,
     handleGetOrdersByCustomerId,
