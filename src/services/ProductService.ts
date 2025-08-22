@@ -102,7 +102,12 @@ const handleGetProductBySlug = async (req: any) => {
     const product = await ProductRepo.getBySlug(productSlug);
     return product;
 }
+const handleGetByPagination = async (page: number, limit: number) => {
+    const products = await ProductRepo.getByPagination(page, limit);
+    return products;
+}
 const ProductService = {
+    handleGetByPagination,
     handleGetProductBySlug,
     handleSearch,
     handleUpdateProductStock,
