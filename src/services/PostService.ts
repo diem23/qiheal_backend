@@ -52,7 +52,12 @@ const addBase64ImagesToPost = async (req: any) => {
 
     return updatedProduct;
 };
+const handleGetByPagination = async (page: number, limit: number) => {
+    const posts = await PostRepo.getByPagination(page, limit);
+    return posts;
+}
 const PostService = {
+    handleGetByPagination,
     handleChooseRelatedPosts,
     handleSearch,
     handleGetPosts,

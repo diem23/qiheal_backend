@@ -12,6 +12,16 @@ const chooseRelatedPosts = async (postId: Types.ObjectId, relativePostIds: Types
     return currentPost;
 
 }
+const getByPagination = async (page: number, limit: number): Promise<Post[] | null> => {
+    const posts = await PostModel.find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean<Post[]>()
+        .exec()
+
+    return posts
+}
 const search = async (keyword: string, page: number, limit: number): Promise<Post[] | null> => {
     const posts = await PostModel.find({
         $or: [
@@ -64,6 +74,7 @@ const updateImages = async (id: Types.ObjectId, file: string) => {
     return updatedPost;
 };
 const PostRepo = {
+    getByPagination,
     chooseRelatedPosts,
     search,
     getAlls,
