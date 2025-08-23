@@ -74,6 +74,34 @@ AuthenRouter.post("/signup/customer", async (req, res) => {
 //     }
 // }
 // );
+AuthenRouter.post('/refresh-token', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Refresh token',
+            schema: { 
+                $refreshToken: "your_refresh_token_here"
+            }
+        } 
+        */
+    try {
+        const response = await AuthenService.handleRefreshToken(req.body.refreshToken);
+        if (response) {
+            return res.status(200).json({
+                message: 'Refresh token successfully',
+                data: response,
+            });
+        }
+        return res.status(400).json({
+            message: 'Refresh token failed',
+        });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
 AuthenRouter.post('/login', async (req, res)=>{
     /* #swagger.parameters['body'] = {
             in: 'body',
