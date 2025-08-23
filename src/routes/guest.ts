@@ -86,6 +86,29 @@ GuestRouter.post('/product/pagination', async (req, res) => {
         data: response,
     });
 })
+
+// Get posts by pagination
+GuestRouter.post('/post/pagination', async (req, res) => {
+    /* #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Get posts by pagination',
+            schema: { 
+                page: 1,
+                limit: 10
+            }
+        } 
+    */
+    const page = parseInt(req.body.page as string) || PaginationSetting.DEFAULT_PAGE;
+    const limit = parseInt(req.body.limit as string) || PaginationSetting.DEFAULT_LIMIT;
+    const response = await PostService.handleGetByPagination(page, limit);
+    res.status(200).json({
+        message: 'Get posts by pagination successfully',
+        count: response?.length,
+        data: response,
+    });
+})
+   
+
 // Get all products
 GuestRouter.get('/product/', async(req,  res) => {
     const response = await ProductService.handleGetProducts(req)
