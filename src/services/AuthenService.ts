@@ -29,7 +29,7 @@ const handleSignup = async (req: any) => {
 const getAccessToken = (user: any) => {
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
     if (!secretKey) throw new Error("Không tìm thấy secret key");
-    const accessToken = sign(user, secretKey, {expiresIn: '1m'});
+    const accessToken = sign(user, secretKey);
     return accessToken;
 }
 const handleRefreshToken = async (refreshToken: string) => {
