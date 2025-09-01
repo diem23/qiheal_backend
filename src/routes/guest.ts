@@ -7,6 +7,8 @@ import { ContactService } from '../services/ContactService';
 import sendMail from '../helper/sendMail';
 import VoucherService from '../services/VoucherService';
 import { PaginationSetting } from '../Types/Pagination.props';
+import PostRepo from '../repos/PostRepo';
+import ProductRepo from '../repos/ProductRepo';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -80,10 +82,12 @@ GuestRouter.post('/product/pagination', async (req, res) => {
     const page = parseInt(req.body.page as string) || PaginationSetting.DEFAULT_PAGE;
     const limit = parseInt(req.body.limit as string) || PaginationSetting.DEFAULT_LIMIT;
     const response = await ProductService.handleGetByPagination(page, limit);
+    const totalCount = await ProductRepo.getTotalCount();
     res.status(200).json({
         message: 'Get products by pagination successfully',
         count: response?.length,
         data: response,
+        totalCount
     });
 })
 
@@ -101,10 +105,12 @@ GuestRouter.post('/post/pagination', async (req, res) => {
     const page = parseInt(req.body.page as string) || PaginationSetting.DEFAULT_PAGE;
     const limit = parseInt(req.body.limit as string) || PaginationSetting.DEFAULT_LIMIT;
     const response = await PostService.handleGetByPagination(page, limit);
+    const totalCount = await PostRepo.getTotalCount();
     res.status(200).json({
         message: 'Get posts by pagination successfully',
         count: response?.length,
         data: response,
+        totalCount
     });
 })
    

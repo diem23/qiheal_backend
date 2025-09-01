@@ -99,7 +99,11 @@ const chooseRelatedProducts = async (productId: Types.ObjectId, relatedProductId
     await currentProduct.save();
     return currentProduct;
 }
+const getTotalCount = async (): Promise<number> => {
+    return await ProductModel.countDocuments();
+}
 const ProductRepo = {
+    getTotalCount,
     getByPagination,
     search,
     getAlls,

@@ -12,6 +12,9 @@ const chooseRelatedPosts = async (postId: Types.ObjectId, relativePostIds: Types
     return currentPost;
 
 }
+const getTotalCount = async (): Promise<number> => {
+    return await PostModel.countDocuments(); // or whatever filter you use
+}
 const getByPagination = async (page: number, limit: number): Promise<Post[] | null> => {
     const posts = await PostModel.find()
         .sort({ createdAt: -1 })
@@ -82,6 +85,7 @@ const PostRepo = {
     create,
     update,
     del,
-    updateImages
+    updateImages,
+    getTotalCount
 }
 export default PostRepo
