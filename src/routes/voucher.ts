@@ -1,8 +1,6 @@
 import express from 'express';
 import VoucherService from '../services/VoucherService';
 import { Types } from 'mongoose';
-import { UserRole } from '../model/User';
-import verifyRoles from '../middleware/verifyRoles';
 export const VoucherRouter = express.Router();
 VoucherRouter.get('/',   async (req, res) => {
     try {
@@ -22,7 +20,7 @@ VoucherRouter.get('/',   async (req, res) => {
 VoucherRouter.get('/:id',   async (req, res) => {
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
-            return res.status(400).json({ message: 'Invalid voucher ID format' });
+            return res.status(400).json({ message: 'Mã voucher không hợp lệ' });
         }
         const voucherId = new Types.ObjectId(req.params.id);
         const voucher = await VoucherService.handleGetVoucherById(voucherId);
@@ -37,13 +35,28 @@ VoucherRouter.get('/:id',   async (req, res) => {
         });
     }
 });
-VoucherRouter.get('/:code',   async (req, res) => {
+// VoucherRouter.get('/:code',   async (req, res) => {
+//     try {
+//         const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
+//         if (!voucher) {
+//             return res.status(404).json({ message: 'Voucher not found' });
+//         }
+//         res.status(200).json(voucher);
+//     } catch (error) {
+//         return res.status(500).json({
+//             message: "Internal server error",
+//             error: error instanceof Error ? error.message : String(error),
+//         });
+//     }
+// });
+VoucherRouter.get('/:code/orders', async (req, res) => {
     try {
-        const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
-        if (!voucher) {
-            return res.status(404).json({ message: 'Voucher not found' });
-        }
-        res.status(200).json(voucher);
+        const orders = await VoucherService.handleGetOrdersByCode(req.params.code);
+        res.status(200).json({
+            message: 'Get orders by voucher code successfully',
+            count: orders?.length,
+            data: orders,
+        });
     } catch (error) {
         return res.status(500).json({
             message: "Internal server error",
@@ -58,6 +71,7 @@ VoucherRouter.post('/',   async (req, res) => {
             schema: { 
                 $code: "TH_01",
                 $discount: "10000",
+                $quantity: "10",
                 $condition: "100000",
                 $expiredDate: "2024-12-31",
             }
@@ -90,7 +104,7 @@ VoucherRouter.put('/:id',   async (req, res) => {
     */
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
-            return res.status(400).json({ message: 'Invalid voucher ID format' });
+            return res.status(400).json({ message: 'Mã voucher không hợp lệ' });
         }
         const voucherId = new Types.ObjectId(req.params.id);
         const updatedVoucher = await VoucherService.handleUpdateVoucher(voucherId, req.body);
@@ -111,7 +125,7 @@ VoucherRouter.put('/:id',   async (req, res) => {
 VoucherRouter.delete('/:id',   async (req, res) => {
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
-            return res.status(400).json({ message: 'Invalid voucher ID format' });
+            return res.status(400).json({ message: 'Mã voucher không hợp lệ' });
         }
         const voucherId = new Types.ObjectId(req.params.id);
         const deletedVoucher = await VoucherService.handleDeleteVoucher(voucherId);

@@ -1,11 +1,12 @@
 import bcrypt from 'bcrypt';
 import UserRepo from '../repos/UserRepo';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import User, { UserRole } from '../model/User';
 import { CustomerService } from './CustomerService';
 import { OAuth2Client } from 'google-auth-library';
 import Customer from '../model/Customer';
 import { get, Types } from 'mongoose';
+import { TokenBody } from '../Types/TokenBody.props';
 const checkEmailFormat = (email: string|undefined) => {
     if (!email) return false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,12 +30,36 @@ const getAccessToken = (user: any) => {
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
     if (!secretKey) throw new Error("Không tìm thấy secret key");
     const accessToken = sign(user, secretKey);
+    return accessToken;
+}
+const handleRefreshToken = async (refreshToken: string) => {
+    const secretKey = process.env.REFRESH_TOKEN_SECRET;
+    if (!secretKey) throw new Error("Không tìm thấy secret key");
+    let user: TokenBody = {
+        userId: new Types.ObjectId(),
+        username: '',
+        role: []
+    } ;
+    await verify(refreshToken, secretKey, (err: any, decoded: any) => {
+        if (err) throw new Error("Refresh token không hợp lệ");
+        user = {
+            userId: decoded.userId as Types.ObjectId,
+            customerId: decoded.customerId as Types.ObjectId || undefined,
+            username: decoded.username,
+            role: decoded.role
+        };
+    });
+    
+    if (!user) throw new Error("Không tìm thấy người dùng");
+    //console.log("User from refresh token: ", user);
+  
     return {
-        accessToken: accessToken
-    }
+        accessToken: getAccessToken(user),
+        refreshToken
+    };
 }
 // Allow users to login with username, email, or phone number
-const handleLogin = async (userInfo: any)=>{
+const handleLogin = async (userInfo: any)=> {
     console.log("userInfo: ", userInfo.username);
     let user: User | null = null;
     let customer: Customer | null = null;
@@ -60,13 +85,19 @@ const handleLogin = async (userInfo: any)=>{
         customer = await CustomerService.handleGetCustomerByUserId(user._id as Types.ObjectId);
         if (!customer) throw new Error("Không tìm thấy khách hàng cho người dùng này");
     }
-    const userData = {
+    const userData: TokenBody = {
         userId: user._id as Types.ObjectId,
         customerId: customer?._id as Types.ObjectId || undefined,
         username: user.username,
         role: user.role
     }
-    return await getAccessToken(userData);
+    const secretKey = process.env.REFRESH_TOKEN_SECRET;
+    if (!secretKey) throw new Error("Không tìm thấy secret key");
+    const refreshToken = sign(userData, secretKey);
+    return {
+        accessToken: await getAccessToken(userData),
+        refreshToken
+    }
    
 }
 const checkGoogleLogin = async (token: string)=> {
@@ -125,6 +156,7 @@ const handleGoogleLogin = async (token: string) => {
     return await getAccessToken(userToken);
 }
 export default{
+    handleRefreshToken,
     handleSignup,
     checkEmailFormat,
     handleGoogleLogin,

@@ -16,7 +16,7 @@ OrderRouter.get('/', async (req, res) => {
 OrderRouter.get('/:id',  async (req, res) => {
     // #swagger.tags = ['Order']
     if (Types.ObjectId.isValid(req.params.id) === false) {
-        return res.status(400).json({ message: 'Invalid order ID' });
+        return res.status(400).json({ message: 'Mã đơn hàng không hợp lệ' });
     }
     const orderId = new Types.ObjectId(req.params.id);
     const response = await OrderService.handleGetOrderById(orderId);
@@ -37,7 +37,7 @@ OrderRouter.put('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
         */
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
-            return res.status(400).json({ message: 'Invalid order ID' });
+            return res.status(400).json({ message: 'Mã đơn hàng không hợp lệ' });
         }
         const orderId = new Types.ObjectId(req.params.id);
         const response = await OrderService.handleUpdateOrder(orderId, req.body);
@@ -102,7 +102,7 @@ OrderRouter.post('/cancle',  async (req, res) => {
 OrderRouter.delete('/:id', verifyRoles(UserRole.ADMIN), async (req, res) => {
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
-            return res.status(400).json({ message: 'Invalid order ID' });
+            return res.status(400).json({ message: 'Mã đơn hàng không hợp lệ' });
         }
         const orderId = new Types.ObjectId(req.params.id);
         const response = await OrderService.handleDeleteOrder(orderId);

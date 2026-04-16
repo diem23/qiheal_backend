@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import VoucherRepo from "../repos/VoucherRepo";
 import Voucher from "../model/Voucher";
+import { OrderService } from "./OrderService";
 
 const handleGetAllVouchers = async () => {
     const vouchers = await VoucherRepo.getAlls();
@@ -11,6 +12,7 @@ const handleGetVoucherById = async (voucherId: Types.ObjectId) => {
     return voucher;
 }
 const handleCreateVoucher = async (voucher: Voucher) => {
+    voucher.remainingQuantity = voucher.quantity;
     const newVoucher = await VoucherRepo.create(voucher);
     if (!newVoucher) {
         throw new Error("Tạo voucher thất bại");
@@ -53,7 +55,7 @@ const handleCheckApplyVoucher = async (voucher: Voucher, totalPrice: number): Pr
     if ( !voucher.expiredDate) {
         throw new Error("Ngày hết hạn voucher là bắt buộc");
     }
-    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date());
+    return (voucher.condition <= totalPrice && voucher.expiredDate > new Date() && (voucher.remainingQuantity ?? 0) > 0);
 
 }
 const handleRestoreVoucher = async (voucher: Voucher) => {
@@ -67,15 +69,25 @@ const handleRestoreVoucher = async (voucher: Voucher) => {
 }
 const handleMarkVoucherAsUsed = async (voucher: Voucher) => {
     // This function can be implemented to mark a voucher as used
-    voucher.isActive = false;
+    //voucher.isActive = false;
+    voucher.remainingQuantity ? voucher.remainingQuantity-- : 0;
+    if (!voucher.remainingQuantity) voucher.isActive = false;
     const updatedVoucher = await VoucherRepo.update(voucher._id as Types.ObjectId, voucher);
     if (!updatedVoucher) {
         throw new Error("Đánh dấu voucher là đã sử dụng thất bại");
     }
     return updatedVoucher;
 }
-
+const handleGetOrdersByCode = async (code: string) => {
+    const voucher = await VoucherRepo.getByCode(code);
+    const customers = await OrderService.handleGetOrdersByVoucherId(voucher?._id as Types.ObjectId);
+    if (!customers) {
+        throw new Error("Không tìm thấy khách hàng sử dụng voucher");
+    }
+    return customers;
+}
 const VoucherService = {
+    handleGetOrdersByCode,
     handleGetAllVouchers,
     handleGetVoucherById,
     handleCreateVoucher,

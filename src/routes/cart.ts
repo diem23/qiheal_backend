@@ -16,7 +16,7 @@ CartRouter.get("/:id",verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req
     try{
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
-                message: "Invalid cart ID",
+                message: "Mã giỏ hàng không hợp lệ",
             });
         }
         const cartId = new Types.ObjectId(req.params.id);
@@ -54,7 +54,7 @@ CartRouter.put("/:id",verifyRoles(UserRole.ADMIN, UserRole.CUSTOMER), async (req
     try {
         if (Types.ObjectId.isValid(req.params.id) === false) {
             return res.status(400).json({
-                message: "Invalid cart ID",
+                message: "Mã giỏ hàng không hợp lệ",
             });
         }
         const cartId = new Types.ObjectId(req.params.id);
