@@ -1,14 +1,12 @@
 import express from 'express';
-import verifyRoles from '../middleware/verifyRoles';
-import PostService from '../services/PostService';
-import ProductService from '../services/ProductService';
-import { OrderService } from '../services/OrderService';
-import { ContactService } from '../services/ContactService';
-import sendMail from '../helper/sendMail';
-import VoucherService from '../services/VoucherService';
-import { PaginationSetting } from '../Types/Pagination.props';
 import PostRepo from '../repos/PostRepo';
 import ProductRepo from '../repos/ProductRepo';
+import { ContactService } from '../services/ContactService';
+import { OrderService } from '../services/OrderService';
+import PostService from '../services/PostService';
+import ProductService from '../services/ProductService';
+import VoucherService from '../services/VoucherService';
+import { PaginationSetting } from '../Types/Pagination.props';
 export const GuestRouter = express.Router();
 // Search posts
 GuestRouter.post("/post/search", async (req, res) => {
@@ -113,10 +111,10 @@ GuestRouter.post('/post/pagination', async (req, res) => {
         totalCount
     });
 })
-   
+
 
 // Get all products
-GuestRouter.get('/product/', async(req,  res) => {
+GuestRouter.get('/product/', async (req, res) => {
     const response = await ProductService.handleGetProducts(req)
     res.status(200).json({
         message: 'Get all products successfully',
@@ -141,7 +139,7 @@ GuestRouter.get('/product/slug/:slug', async (req, res) => {
     res.status(200).send(response)
 });
 // Create a new order
-GuestRouter.post('/order',async (req, res) => {
+GuestRouter.post('/order', async (req, res) => {
     /* #swagger.parameters['body'] = {
             in: 'body',
             description: 'Create a new order',
@@ -167,26 +165,52 @@ GuestRouter.post('/order',async (req, res) => {
         } 
         */
     try {
-    const voucherCode = req.body.voucher;
-    delete req.body.voucher;
-    const response = await OrderService.handleCreateOrder(req.body, voucherCode);
-    await OrderService.handleSendMailAfterOrder( 'tuvanskhhvn@gmail.com', 'New Order Created', 
-        {
-            fullname: response?.fullname,
-            orderCode: response?._id.toString(),
-            totalPrice: response?.totalPrice,
-            email: response?.email,
-            phone: response?.phone,
-            province: response?.province,
-            district: response?.district,
-            ward: response?.ward,
-            address: response?.address,
-            orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+        const voucherCode = req.body.voucher;
+        delete req.body.voucher;
+        const response = await OrderService.handleCreateOrder(req.body, voucherCode);
+        await OrderService.handleSendMailAfterOrder('tuvanskhhvn@gmail.com', 'New Order Created',
+            {
+                fullname: response?.fullname,
+                orderCode: response?._id.toString(),
+                totalPrice: response?.totalPrice,
+                email: response?.email,
+                phone: response?.phone,
+                province: response?.province,
+                district: response?.district,
+                ward: response?.ward,
+                address: response?.address,
+                orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+            });
+        await OrderService.handleSendMailAfterOrder('nguyenduynoa198@gmail.com', 'New Order Created',
+            {
+                fullname: response?.fullname,
+                orderCode: response?._id.toString(),
+                totalPrice: response?.totalPrice,
+                email: response?.email,
+                phone: response?.phone,
+                province: response?.province,
+                district: response?.district,
+                ward: response?.ward,
+                address: response?.address,
+                orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+            });
+        await OrderService.handleSendMailAfterOrder('anhta712@gmail.com', 'New Order Created',
+            {
+                fullname: response?.fullname,
+                orderCode: response?._id.toString(),
+                totalPrice: response?.totalPrice,
+                email: response?.email,
+                phone: response?.phone,
+                province: response?.province,
+                district: response?.district,
+                ward: response?.ward,
+                address: response?.address,
+                orderUrl: `${process.env.FRONTEND_URL}/admin/orders`
+            });
+        res.status(201).json({
+            message: 'Order created successfully',
+            data: response,
         });
-    res.status(201).json({
-        message: 'Order created successfully',
-        data: response,
-    });
     } catch (error) {
         res.status(500).json({
             message: 'Error creating order',
@@ -242,9 +266,9 @@ GuestRouter.post('/contact', async (req, res) => {
             message: 'Error creating contact',
             error: error instanceof Error ? error.message : String(error),
         });
-    }   
+    }
 });
-GuestRouter.get('/voucher/:code',   async (req, res) => {
+GuestRouter.get('/voucher/:code', async (req, res) => {
     try {
         const voucher = await VoucherService.handleGetVoucherByCode(req.params.code);
         if (!voucher) {
@@ -252,7 +276,7 @@ GuestRouter.get('/voucher/:code',   async (req, res) => {
         }
         res.status(200).json(voucher);
     } catch (error) {
-        return res.status(500).json({   
+        return res.status(500).json({
             message: "Internal server error",
             error: error instanceof Error ? error.message : String(error),
         });
